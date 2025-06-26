@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ItemGroup Label="ProjectConfigurations">
+        <ProjectConfiguration Include="Debug|Win32">
+            <Configuration>Debug</Configuration>
+            <Platform>Win32</Platform>
+        </ProjectConfiguration>
+        <ProjectConfiguration Include="Release|Win32">
+            <Configuration>Release</Configuration>
+            <Platform>Win32</Platform>
+        </ProjectConfiguration>
+        <ProjectConfiguration Include="Debug|x64">
+            <Configuration>Debug</Configuration>
+            <Platform>x64</Platform>
+        </ProjectConfiguration>
+        <ProjectConfiguration Include="Release|x64">
+            <Configuration>Release</Configuration>
+            <Platform>x64</Platform>
+        </ProjectConfiguration>
+    </ItemGroup>
+    <PropertyGroup Label="Globals">
+        <VCProjectVersion>17.0</VCProjectVersion>
+        <Keyword>Win32Proj</Keyword>
+        <ProjectGuid>{de593c24-11df-4fb4-bebf-7bbebf9d679e}</ProjectGuid>
+        <RootNamespace>Game</RootNamespace>
+        <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+        <ProjectName>Chess3D</ProjectName>
+    </PropertyGroup>
+    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+        <ConfigurationType>Application</ConfigurationType>
+        <UseDebugLibraries>true</UseDebugLibraries>
+        <PlatformToolset>v143</PlatformToolset>
+        <CharacterSet>Unicode</CharacterSet>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+        <ConfigurationType>Application</ConfigurationType>
+        <UseDebugLibraries>false</UseDebugLibraries>
+        <PlatformToolset>v143</PlatformToolset>
+        <WholeProgramOptimization>true</WholeProgramOptimization>
+        <CharacterSet>Unicode</CharacterSet>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+        <ConfigurationType>Application</ConfigurationType>
+        <UseDebugLibraries>true</UseDebugLibraries>
+        <PlatformToolset>v143</PlatformToolset>
+        <CharacterSet>Unicode</CharacterSet>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+        <ConfigurationType>Application</ConfigurationType>
+        <UseDebugLibraries>false</UseDebugLibraries>
+        <PlatformToolset>v143</PlatformToolset>
+        <WholeProgramOptimization>true</WholeProgramOptimization>
+        <CharacterSet>Unicode</CharacterSet>
+    </PropertyGroup>
+    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props"/>
+    <ImportGroup Label="ExtensionSettings">
+    </ImportGroup>
+    <ImportGroup Label="Shared">
+    </ImportGroup>
+    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+    </ImportGroup>
+    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+    </ImportGroup>
+    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+    </ImportGroup>
+    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+    </ImportGroup>
+    <PropertyGroup Label="UserMacros"/>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+        <OutDir>$(SolutionDir)Temporary\$(ProjectName)_$(PlatformShortName)_$(Configuration)\</OutDir>
+        <IntDir>$(SolutionDir)Temporary\$(ProjectName)_$(PlatformShortName)_$(Configuration)\</IntDir>
+        <TargetName>$(ProjectName)_$(Configuration)_$(PlatformShortName)</TargetName>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+        <OutDir>$(SolutionDir)Temporary\$(ProjectName)_$(PlatformShortName)_$(Configuration)\</OutDir>
+        <IntDir>$(SolutionDir)Temporary\$(ProjectName)_$(PlatformShortName)_$(Configuration)\</IntDir>
+        <TargetName>$(ProjectName)_$(Configuration)_$(PlatformShortName)</TargetName>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+        <OutDir>$(SolutionDir)Temporary\$(ProjectName)_$(PlatformShortName)_$(Configuration)\</OutDir>
+        <IntDir>$(SolutionDir)Temporary\$(ProjectName)_$(PlatformShortName)_$(Configuration)\</IntDir>
+        <TargetName>$(ProjectName)_$(Configuration)_$(PlatformShortName)</TargetName>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+        <OutDir>$(SolutionDir)Temporary\$(ProjectName)_$(PlatformShortName)_$(Configuration)\</OutDir>
+        <IntDir>$(SolutionDir)Temporary\$(ProjectName)_$(PlatformShortName)_$(Configuration)\</IntDir>
+        <TargetName>$(ProjectName)_$(Configuration)_$(PlatformShortName)</TargetName>
+    </PropertyGroup>
+    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+        <ClCompile>
+            <WarningLevel>Level4</WarningLevel>
+            <SDLCheck>true</SDLCheck>
+            <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <ConformanceMode>true</ConformanceMode>
+            <LanguageStandard>stdcpp17</LanguageStandard>
+            <AdditionalIncludeDirectories>$(SolutionDir)Code/;$(SolutionDir)../Engine/Code/</AdditionalIncludeDirectories>
+        </ClCompile>
+        <Link>
+            <SubSystem>Windows</SubSystem>
+            <GenerateDebugInformation>true</GenerateDebugInformation>
+            <AdditionalLibraryDirectories>$(SolutionDir)Code/;$(SolutionDir)../Engine/Code/</AdditionalLibraryDirectories>
+        </Link>
+        <PostBuildEvent>
+            <Message>Copying $(TargetFileName) to $(SolutionDir)Run...</Message>
+            <Command>xcopy /Y /F /I "$(TargetPath)" "$(SolutionDir)Run"</Command>
+        </PostBuildEvent>
+    </ItemDefinitionGroup>
+    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+        <ClCompile>
+            <WarningLevel>Level4</WarningLevel>
+            <FunctionLevelLinking>true</FunctionLevelLinking>
+            <IntrinsicFunctions>true</IntrinsicFunctions>
+            <SDLCheck>true</SDLCheck>
+            <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <ConformanceMode>true</ConformanceMode>
+            <LanguageStandard>stdcpp17</LanguageStandard>
+            <AdditionalIncludeDirectories>$(SolutionDir)Code/;$(SolutionDir)../Engine/Code/</AdditionalIncludeDirectories>
+        </ClCompile>
+        <Link>
+            <SubSystem>Windows</SubSystem>
+            <EnableCOMDATFolding>true</EnableCOMDATFolding>
+            <OptimizeReferences>true</OptimizeReferences>
+            <GenerateDebugInformation>true</GenerateDebugInformation>
+            <AdditionalLibraryDirectories>$(SolutionDir)Code/;$(SolutionDir)../Engine/Code/</AdditionalLibraryDirectories>
+        </Link>
+        <PostBuildEvent>
+            <Message>Copying $(TargetFileName) to $(SolutionDir)Run...</Message>
+            <Command>xcopy /Y /F /I "$(TargetPath)" "$(SolutionDir)Run"</Command>
+        </PostBuildEvent>
+    </ItemDefinitionGroup>
+    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+        <ClCompile>
+            <WarningLevel>Level4</WarningLevel>
+            <SDLCheck>true</SDLCheck>
+            <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <ConformanceMode>true</ConformanceMode>
+            <LanguageStandard>stdcpp17</LanguageStandard>
+            <AdditionalIncludeDirectories>$(SolutionDir)Code/;$(SolutionDir)../Engine/Code/</AdditionalIncludeDirectories>
+        </ClCompile>
+        <Link>
+            <SubSystem>Windows</SubSystem>
+            <GenerateDebugInformation>true</GenerateDebugInformation>
+            <AdditionalLibraryDirectories>$(SolutionDir)Code/;$(SolutionDir)../Engine/Code/</AdditionalLibraryDirectories>
+        </Link>
+        <PostBuildEvent>
+            <Message>Copying $(TargetFileName) to $(SolutionDir)Run...</Message>
+            <Command>xcopy /Y /F /I "$(TargetPath)" "$(SolutionDir)Run"</Command>
+        </PostBuildEvent>
+    </ItemDefinitionGroup>
+    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+        <ClCompile>
+            <WarningLevel>Level4</WarningLevel>
+            <FunctionLevelLinking>true</FunctionLevelLinking>
+            <IntrinsicFunctions>true</IntrinsicFunctions>
+            <SDLCheck>true</SDLCheck>
+            <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <ConformanceMode>true</ConformanceMode>
+            <LanguageStandard>stdcpp17</LanguageStandard>
+            <AdditionalIncludeDirectories>$(SolutionDir)Code/;$(SolutionDir)../Engine/Code/</AdditionalIncludeDirectories>
+        </ClCompile>
+        <Link>
+            <SubSystem>Windows</SubSystem>
+            <EnableCOMDATFolding>true</EnableCOMDATFolding>
+            <OptimizeReferences>true</OptimizeReferences>
+            <GenerateDebugInformation>true</GenerateDebugInformation>
+            <AdditionalLibraryDirectories>$(SolutionDir)Code/;$(SolutionDir)../Engine/Code/</AdditionalLibraryDirectories>
+        </Link>
+        <PostBuildEvent>
+            <Message>Copying $(TargetFileName) to $(SolutionDir)Run...</Message>
+            <Command>xcopy /Y /F /I "$(TargetPath)" "$(SolutionDir)Run"</Command>
+        </PostBuildEvent>
+    </ItemDefinitionGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Engine\Code\Engine\Engine.vcxproj">
+            <Project>{cc3dfa34-a261-4f91-b446-63d998b7b880}</Project>
+        </ProjectReference>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="..\..\Run\Data\Audio\Click.mp3"/>
+        <Content Include="..\..\Run\Data\ChessMatchConfig.xml" />
+        <Content Include="..\..\Run\Data\Definitions\ChessPieceDefinition.xml" />
+        <Content Include="..\..\Run\Data\Fonts\CaiziiFixedFont" />
+        <Content Include="..\..\Run\Data\Fonts\SquirrelFixedFont"/>
+        <Content Include="..\..\Run\Data\GameConfig.xml"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="..\..\Run\Data\Shaders\Default.hlsl"/>
+        <Content Include="..\..\Run\Data\Shaders\Diffuse.hlsl" />
+        <Content Include="..\..\Run\Data\Shaders\BlinnPhong.hlsl" />
+        <ClCompile Include="..\..\Run\Data\Shaders\ShaderMath.hlsl" />
+        <ClCompile Include="Core\Actor\Actor.cpp" />
+        <ClCompile Include="Core\Component\CollisionComponent.cpp" />
+        <ClCompile Include="Core\Component\Component.cpp" />
+        <ClCompile Include="Core\Component\MeshComponent.cpp" />
+        <ClCompile Include="Core\LoggerSubsystem.cpp" />
+        <ClCompile Include="Core\Render\BakedModel.cpp" />
+        <ClCompile Include="Core\Render\Renderable.cpp" />
+        <ClCompile Include="Core\Render\RenderSubsystem.cpp" />
+        <ClCompile Include="Core\Serilization\Serializable.cpp" />
+        <ClCompile Include="Core\Widget.cpp" />
+        <ClCompile Include="Core\WidgetSubsystem.cpp" />
+        <ClCompile Include="Module\Debug\WidgetDebugPanel.cpp" />
+        <ClCompile Include="Module\Definition\ChessPieceDefinition.cpp" />
+        <ClCompile Include="Module\Gameplay\ChessBoard.cpp" />
+        <ClCompile Include="Module\Gameplay\ChessMatch.cpp" />
+        <ClCompile Include="Module\Gameplay\ChessObject.cpp" />
+        <ClCompile Include="Module\Gameplay\ChessPiece.cpp" />
+        <ClCompile Include="Module\Gameplay\ChessPlayer.cpp" />
+        <ClCompile Include="Module\Lib\ChessMatchCommon.cpp" />
+        <ClCompile Include="Module\Lib\DebugCommon.cpp" />
+        <ClCompile Include="Module\Model\BakedModelBishop.cpp" />
+        <ClCompile Include="Module\Model\BakedModelKnight.cpp" />
+        <ClCompile Include="Module\Model\BakeModelChessBoard.cpp" />
+        <ClCompile Include="Module\Model\BakeModelKing.cpp" />
+        <ClCompile Include="Module\Model\BakeModelPawn.cpp" />
+        <ClCompile Include="Module\Model\BakeModelQueen.cpp"/>
+        <ClCompile Include="Module\Model\BakeModelRook.cpp" />
+        <ClCompile Include="Module\Model\GeometryCommon.cpp" />
+        <ClCompile Include="Player.cpp"/>
+        <ClCompile Include="Prop.cpp"/>
+        <ClCompile Include="App.cpp"/>
+        <ClCompile Include="Entity.cpp"/>
+        <ClCompile Include="Game.cpp"/>
+        <ClCompile Include="GameCommon.cpp"/>
+        <ClCompile Include="Main_Windows.cpp"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ClInclude Include="App.hpp"/>
+        <ClInclude Include="Core\Actor\Actor.hpp" />
+        <ClInclude Include="Core\Component\CollisionComponent.hpp" />
+        <ClInclude Include="Core\Component\Component.hpp" />
+        <ClInclude Include="Core\Component\MeshComponent.hpp" />
+        <ClInclude Include="Core\LoggerSubsystem.hpp" />
+        <ClInclude Include="Core\Render\BakedModel.hpp" />
+        <ClInclude Include="Core\Render\Renderable.hpp" />
+        <ClInclude Include="Core\Render\RenderContext.hpp" />
+        <ClInclude Include="Core\Render\RenderSubsystem.hpp" />
+        <ClInclude Include="Core\Serilization\Serializable.hpp" />
+        <ClInclude Include="Core\Widget.hpp" />
+        <ClInclude Include="Core\WidgetSubsystem.hpp" />
+        <ClInclude Include="EngineBuildPreferences.hpp"/>
+        <ClInclude Include="Entity.hpp"/>
+        <ClInclude Include="Game.hpp"/>
+        <ClInclude Include="GameCommon.hpp"/>
+        <ClInclude Include="Module\Debug\WidgetDebugPanel.hpp" />
+        <ClInclude Include="Module\Definition\ChessPieceDefinition.hpp" />
+        <ClInclude Include="Module\Gameplay\CameraState.h" />
+        <ClInclude Include="Module\Gameplay\ChessBoard.hpp" />
+        <ClInclude Include="Module\Gameplay\ChessMatch.hpp" />
+        <ClInclude Include="Module\Gameplay\ChessObject.hpp" />
+        <ClInclude Include="Module\Gameplay\ChessPiece.hpp" />
+        <ClInclude Include="Module\Gameplay\ChessPlayer.hpp" />
+        <ClInclude Include="Module\Gameplay\GameState.hpp" />
+        <ClInclude Include="Module\Lib\ChessMatchCommon.hpp" />
+        <ClInclude Include="Module\Lib\DebugCommon.hpp" />
+        <ClInclude Include="Module\Model\BakedModelBishop.hpp" />
+        <ClInclude Include="Module\Model\BakedModelKnight.hpp" />
+        <ClInclude Include="Module\Model\BakeModelChessBoard.hpp" />
+        <ClInclude Include="Module\Model\BakeModelKing.hpp" />
+        <ClInclude Include="Module\Model\BakeModelPawn.hpp" />
+        <ClInclude Include="Module\Model\BakeModelQueen.hpp" />
+        <ClInclude Include="Module\Model\BakeModelRook.hpp" />
+        <ClInclude Include="Module\Model\GeometryCommon.hpp" />
+        <ClInclude Include="Player.hpp"/>
+        <ClInclude Include="Prop.hpp"/>
+    </ItemGroup>
+    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
+    <ImportGroup Label="ExtensionTargets">
+    </ImportGroup>
+</Project>

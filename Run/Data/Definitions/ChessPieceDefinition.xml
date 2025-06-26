@@ -1,0 +1,38 @@
+<Definitions>
+    <ChessPieceDefinition name="Queen" glyph="Q" slide = "true">
+        <Collision radius="0.05" height="0.6" collidesWithWorld="true" collidesWithActors="false"/>
+        <Components>
+            <Component type="MeshComponent" bakeModel="Queen" renderLit="true" shader="Data/Shaders/Diffuse" texture="Data\Images\FunkyBricks_d.png" normal="Data\Images\FunkyBricks_n.png" specGlossEmit="Data\Images\FunkyBricks_sge.png"/>
+        </Components>
+    </ChessPieceDefinition>
+    <ChessPieceDefinition name="King" glyph="K" slide = "true">
+        <Collision radius="0.05" height="0.6" collidesWithWorld="true" collidesWithActors="false"/>
+        <Components>
+            <Component type="MeshComponent" bakeModel="King" renderLit="true" shader="Data/Shaders/Diffuse" texture="Data\Images\FunkyBricks_d.png" normal="Data\Images\FunkyBricks_n.png" specGlossEmit="Data\Images\FunkyBricks_sge.png"/>
+        </Components>
+    </ChessPieceDefinition>
+    <ChessPieceDefinition name="Rook" glyph="R" slide = "true">
+        <Collision radius="0.05" height="0.6" collidesWithWorld="true" collidesWithActors="false"/>
+        <Components>
+            <Component type="MeshComponent" bakeModel="Rook" renderLit="true" shader="Data/Shaders/Diffuse" texture="Data\Images\FunkyBricks_d.png" normal="Data\Images\FunkyBricks_n.png" specGlossEmit="Data\Images\FunkyBricks_sge.png"/>
+        </Components>
+    </ChessPieceDefinition>
+    <ChessPieceDefinition name="Bishop" glyph="B" slide = "true">
+        <Collision radius="0.05" height="0.6" collidesWithWorld="true" collidesWithActors="false"/>
+        <Components>
+            <Component type="MeshComponent" bakeModel="Bishop" renderLit="true" shader="Data/Shaders/Diffuse" texture="Data\Images\FunkyBricks_d.png" normal="Data\Images\FunkyBricks_n.png" specGlossEmit="Data\Images\FunkyBricks_sge.png"/>
+        </Components>
+    </ChessPieceDefinition>
+    <ChessPieceDefinition name="Knight" glyph="N" slide = "false">
+        <Collision radius="0.05" height="0.6" collidesWithWorld="true" collidesWithActors="false"/>
+        <Components>
+            <Component type="MeshComponent" bakeModel="Knight" renderLit="true" shader="Data/Shaders/Diffuse" texture="Data\Images\FunkyBricks_d.png" normal="Data\Images\FunkyBricks_n.png" specGlossEmit="Data\Images\FunkyBricks_sge.png"/>
+        </Components>
+    </ChessPieceDefinition>
+    <ChessPieceDefinition name="Pawn" glyph="P" slide = "true">
+        <Collision radius="0.05" height="0.6" collidesWithWorld="true" collidesWithActors="false"/>
+        <Components>
+            <Component type="MeshComponent" bakeModel="Pawn" renderLit="true" shader="Data/Shaders/Diffuse" texture="Data\Images\FunkyBricks_d.png" normal="Data\Images\FunkyBricks_n.png" specGlossEmit="Data\Images\FunkyBricks_sge.png"/>
+        </Components>
+    </ChessPieceDefinition>
+</Definitions>

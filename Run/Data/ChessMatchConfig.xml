@@ -1,0 +1,47 @@
+<ChessMatchConfig>
+    <CameraPositions>
+        <CameraPosition name="above" position="3,4,7" orientation="-360,90,0"/>
+    </CameraPositions>
+    <ChessBoard texture="Data\Images\Bricks_d.png" normal="Data\Images\Bricks_n.png" specGlossEmit="Data\Images\Bricks_sge.png" shader="Data/Shaders/Diffuse">
+        <Factions>
+            <Faction display="Player 0" id="0" color="161,40,35" viewPosition="4,-1.5,4" viewOrientation="90,45,0"/>
+            <Faction display="Player 1" id="1" color="85,110,28" viewPosition="4,9.5,4" viewOrientation="-90,45,0"/>
+        </Factions>
+        <ChessPieces texture="Data\Images\FunkyBricks_d.png" normal="Data\Images\FunkyBricks_n.png" specGlossEmit="Data\Images\FunkyBricks_sge.png">
+            <!-- Fraction 0's Pieces-->
+            <ChessPiece name="Rook" position="A1" faction="0"/>
+            <ChessPiece name="Knight" position="B1" faction="0"/>
+            <ChessPiece name="Bishop" position="C1" faction="0"/>
+            <ChessPiece name="Queen" position="D1" faction="0"/>
+            <ChessPiece name="King" position="E1" faction="0"/>
+            <ChessPiece name="Bishop" position="F1" faction="0"/>
+            <ChessPiece name="Knight" position="G1" faction="0"/>
+            <ChessPiece name="Rook" position="H1" faction="0"/>
+            <ChessPiece name="Pawn" position="A2" faction="0"/>
+            <ChessPiece name="Pawn" position="B2" faction="0"/>
+            <ChessPiece name="Pawn" position="C2" faction="0"/>
+            <ChessPiece name="Pawn" position="D2" faction="0"/>
+            <ChessPiece name="Pawn" position="E2" faction="0"/>
+            <ChessPiece name="Pawn" position="F2" faction="0"/>
+            <ChessPiece name="Pawn" position="G2" faction="0"/>
+            <ChessPiece name="Pawn" position="H2" faction="0"/>
+            <!-- Fraction 1's Pieces-->
+            <ChessPiece name="Rook" position="A8" faction="1"/>
+            <ChessPiece name="Knight" position="B8" faction="1"/>
+            <ChessPiece name="Bishop" position="C8" faction="1"/>
+            <ChessPiece name="Queen" position="D8" faction="1"/>
+            <ChessPiece name="King" position="E8" faction="1"/>
+            <ChessPiece name="Bishop" position="F8" faction="1"/>
+            <ChessPiece name="Knight" position="G8" faction="1"/>
+            <ChessPiece name="Rook" position="H8" faction="1"/>
+            <ChessPiece name="Pawn" position="A7" faction="1"/>
+            <ChessPiece name="Pawn" position="B7" faction="1"/>
+            <ChessPiece name="Pawn" position="C7" faction="1"/>
+            <ChessPiece name="Pawn" position="D7" faction="1"/>
+            <ChessPiece name="Pawn" position="E7" faction="1"/>
+            <ChessPiece name="Pawn" position="F7" faction="1"/>
+            <ChessPiece name="Pawn" position="G7" faction="1"/>
+            <ChessPiece name="Pawn" position="H7" faction="1"/>
+        </ChessPieces>
+    </ChessBoard>
+</ChessMatchConfig>
