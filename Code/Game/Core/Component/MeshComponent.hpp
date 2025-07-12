@@ -1,8 +1,10 @@
 ﻿#pragma once
 #include "Component.hpp"
 #include "Engine/Core/Vertex_PCU.hpp"
+#include "Engine/Resource/Loader/ModelLoader/ModelLoader.hpp"
 #include "Game/Core/Render/Renderable.hpp"
 
+struct FMesh;
 class BakedModel;
 class IndexBuffer;
 class VertexBuffer;
@@ -32,9 +34,11 @@ public:
     MeshComponent* AppendVertices(std::vector<Vertex_PCUTBN> vertices, std::vector<unsigned int>& indices);
     MeshComponent* AppendVertices(std::vector<Vertex_PCU> vertices, std::vector<unsigned int>& indices);
     MeshComponent* AppendVertices(std::vector<Vertex_PCU> vertices);
+    MeshComponent* AppendVertices(std::vector<Vertex_PCUTBN> vertices);
     MeshComponent* AppendIndices(std::vector<unsigned int>& indices);
     MeshComponent* Build(BakedModel* model); // Build Vertices and Indices from BakedModel
     MeshComponent* SetModel(BakedModel* model);
+    MeshComponent* SetMesh(FMesh& mesh);
     void           UploadIfDirty();
 
     std::vector<Vertex_PCUTBN> m_vertexesPCUTBN;
@@ -44,7 +48,7 @@ public:
     Texture*                   m_normalTexture        = nullptr;
     Texture*                   m_specGlossEmitTexture = nullptr;
     Shader*                    m_shader               = nullptr;
-    VertexBuffer*              m_vertexBufferPCUTBN         = nullptr;
+    VertexBuffer*              m_vertexBufferPCUTBN   = nullptr;
     VertexBuffer*              m_vertexBufferPCU      = nullptr;
     IndexBuffer*               m_indexBuffer          = nullptr;
     Rgba8                      m_color                = Rgba8::WHITE;
@@ -60,6 +64,9 @@ protected:
 private:
     bool m_dirty = false;
 
+    FMesh m_mesh;
+
+    
     // FMeshes meshes; Consider Packed add vertex data into the struct
     // MeshComponent hold only FMeshes not bunch of vertex data
 };
