@@ -18,7 +18,7 @@
 #include "Engine/Renderer/Renderer.hpp"
 
 Window*                g_theWindow          = nullptr;
-Renderer*              g_theRenderer        = nullptr;
+IRenderer*             g_theRenderer        = nullptr;
 App*                   g_theApp             = nullptr;
 RandomNumberGenerator* g_rng                = nullptr;
 InputSystem*           g_theInput           = nullptr;
@@ -69,9 +69,10 @@ void App::Startup()
     g_theWindow                = new Window(windowConfig);
 
     RenderConfig renderConfig;
-    renderConfig.m_defaultShader = "Diffuse";
+    renderConfig.m_defaultShader = "Data\\Shaders\\Default2D";
     renderConfig.m_window        = g_theWindow;
-    g_theRenderer                = new Renderer(renderConfig); // Create render
+    renderConfig.m_backend       = RendererBackend::DirectX11;
+    g_theRenderer                = IRenderer::CreateRenderer(renderConfig); // Create render
 
     g_theRenderSubsystem = new RenderSubsystem(*g_theRenderer);
 
