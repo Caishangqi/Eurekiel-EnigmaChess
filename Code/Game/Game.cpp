@@ -38,8 +38,8 @@ Game::Game()
     g_theEventSystem->SubscribeEventCallbackFunction("CharInput", Event_DebugCharInput);
 
     /// Resource
-    g_theRenderer->CreateOrGetTextureFromFile("Data/Images/TestUV.png");
-    g_theRenderer->CreateOrGetTextureFromFile("Data/Images/Caizii.png");
+    g_theRenderer->CreateOrGetTexture("Data/Images/TestUV.png");
+    g_theRenderer->CreateOrGetTexture("Data/Images/Caizii.png");
     BakedModel::RegisterModels();
     ChessPieceDefinition::LoadDefinitions("Data/Definitions/ChessPieceDefinition.xml");
 
@@ -101,8 +101,7 @@ Game::Game()
     /// Ball
     m_ball             = new Prop(this);
     m_ball->m_position = Vec3(10, -5, 1);
-    m_ball->m_texture  = g_theRenderer->CreateOrGetTextureFromFile("Data/Images/TestUV.png");
-    //m_ball->m_texture = g_theRenderer->CreateOrGetTextureFromFile("Data/Images/Caizii.png");
+    m_ball->m_texture  = g_theRenderer->CreateOrGetTexture("Data/Images/TestUV.png");
     AddVertsForSphere3D(m_ball->m_vertexes, Vec3(0, 0, 0), 2, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 64, 32);
     /// 
 
@@ -519,6 +518,7 @@ void Game::EnterAttractState()
     POINTER_SAFE_DELETE(match)
     g_theInput->SetCursorMode(CursorMode::POINTER);
     gameState = EGameState::ATTRACT;
+    g_theWidgetSubsystem->RemoveFromViewport("WidgetDebugPanel");
 }
 
 void Game::EnterMatchState()

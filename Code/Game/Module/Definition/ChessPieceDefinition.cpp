@@ -54,10 +54,10 @@ ChessPieceDefinition* ChessPieceDefinition::GetByName(const std::string& name)
 
 void ChessPieceDefinition::ReleaseResources()
 {
-    for (auto& definition : s_definitions)
+    /*for (auto& definition : s_definitions)
     {
         POINTER_SAFE_DELETE(definition.m_shader)
-    }
+    }*/
 }
 
 ChessPieceDefinition::ChessPieceDefinition(const XmlElement& element)
@@ -81,10 +81,10 @@ ChessPieceDefinition::ChessPieceDefinition(const XmlElement& element)
                 {
                     m_model                = BakedModel::GetModelByName(ParseXmlAttribute(*comp, "bakeModel", std::string()));
                     m_renderLit            = ParseXmlAttribute(*comp, "renderLit", m_renderLit);
-                    m_shader               = g_theRenderer->CreateShaderFromFile(ParseXmlAttribute(*comp, "shader", std::string()).c_str(), VertexType::Vertex_PCUTBN);
-                    m_texture              = g_theRenderer->CreateOrGetTextureFromFile(ParseXmlAttribute(*comp, "texture", std::string()).c_str());
-                    m_normalTexture        = g_theRenderer->CreateOrGetTextureFromFile(ParseXmlAttribute(*comp, "normal", std::string()).c_str());
-                    m_specGlossEmitTexture = g_theRenderer->CreateOrGetTextureFromFile(ParseXmlAttribute(*comp, "specGlossEmit", std::string()).c_str());
+                    m_shader               = g_theRenderer->CreateOrGetShader(ParseXmlAttribute(*comp, "shader", std::string()).c_str(), VertexType::Vertex_PCUTBN);
+                    m_texture              = g_theRenderer->CreateOrGetTexture(ParseXmlAttribute(*comp, "texture", std::string()).c_str());
+                    m_normalTexture        = g_theRenderer->CreateOrGetTexture(ParseXmlAttribute(*comp, "normal", std::string()).c_str());
+                    m_specGlossEmitTexture = g_theRenderer->CreateOrGetTexture(ParseXmlAttribute(*comp, "specGlossEmit", std::string()).c_str());
                 }
                 comp = componentElement->NextSiblingElement();
             }

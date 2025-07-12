@@ -94,6 +94,8 @@ public:
     std::vector<Prop*> m_grid_y_unit_1;
     /// 
 
+    
+    
     /// Configs
     XmlDocument m_chessMatchConfig;
 

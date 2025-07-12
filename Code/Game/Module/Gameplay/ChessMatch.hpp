@@ -40,6 +40,7 @@ class ChessMatch : public ISerializable
     friend class WidgetDebugPanel;
     friend class ChessPlayer;
     friend class ChessBoard;
+
 public:
     ChessMatch(Game* game);
     ~ChessMatch() override;

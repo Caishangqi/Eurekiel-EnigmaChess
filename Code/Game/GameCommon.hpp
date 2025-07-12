@@ -7,13 +7,14 @@
 /// Whether or not enable cosmic circle (developer)
 #define COSMIC
 
+
 struct Vertex_PCU;
 struct Rgba8;
 struct Vec2;
 class Camera;
 class App;
 class RandomNumberGenerator;
-class Renderer;
+class IRenderer;
 class InputSystem;
 class AudioSystem;
 class Game;
@@ -23,7 +24,7 @@ class WidgetSubsystem;
 
 extern RandomNumberGenerator* g_rng;
 extern App*                   g_theApp;
-extern Renderer*              g_theRenderer;
+extern IRenderer*              g_theRenderer;
 extern InputSystem*           g_theInput;
 extern AudioSystem*           g_theAudio;
 extern Game*                  g_theGame;

@@ -3,14 +3,14 @@
 
 struct FrameConstants;
 struct LightingConstants;
-class Renderer;
+class IRenderer;
 class Camera;
 class IRenderable;
 
 class RenderSubsystem
 {
 public:
-    RenderSubsystem(Renderer& renderer);
+    RenderSubsystem(IRenderer& renderer);
 
     void Register(IRenderable* r); // Called when the component OnAttach
     void Unregister(IRenderable* r); // Called when the component OnDetach
@@ -21,6 +21,6 @@ public:
     void Shutdown();
 
 private:
-    Renderer&                 m_renderer;
+    IRenderer&                m_renderer;
     std::vector<IRenderable*> m_renderables;
 };

@@ -32,9 +32,8 @@ ChessBoard::ChessBoard()
 
 ChessBoard::~ChessBoard()
 {
-    // TODO: this shader pointer is handle only Chessboard consider add the shader cache in Renderer
     // Like CreateOrShader()
-    POINTER_SAFE_DELETE(m_meshComponent->m_shader)
+    // POINTER_SAFE_DELETE(m_meshComponent->m_shader)
 }
 
 void ChessBoard::OnTick(float deltaTime)
@@ -46,13 +45,13 @@ Actor* ChessBoard::FromXML(const XmlElement& element)
 {
     const XmlElement* chessBoardElement = FindChildElementByName(element, "ChessBoard");
     if (!chessBoardElement) return this;
-    Texture* texture                        = g_theRenderer->CreateOrGetTextureFromFile(ParseXmlAttribute(*chessBoardElement, "texture", std::string()).c_str());
-    Texture* textureNormal                  = g_theRenderer->CreateOrGetTextureFromFile(ParseXmlAttribute(*chessBoardElement, "normal", std::string()).c_str());
-    Texture* specGlossEmit                  = g_theRenderer->CreateOrGetTextureFromFile(ParseXmlAttribute(*chessBoardElement, "specGlossEmit", std::string()).c_str());
+    Texture* texture                        = g_theRenderer->CreateOrGetTexture(ParseXmlAttribute(*chessBoardElement, "texture", std::string()).c_str());
+    Texture* textureNormal                  = g_theRenderer->CreateOrGetTexture(ParseXmlAttribute(*chessBoardElement, "normal", std::string()).c_str());
+    Texture* specGlossEmit                  = g_theRenderer->CreateOrGetTexture(ParseXmlAttribute(*chessBoardElement, "specGlossEmit", std::string()).c_str());
     m_meshComponent->m_diffuseTexture       = texture;
     m_meshComponent->m_normalTexture        = textureNormal;
     m_meshComponent->m_specGlossEmitTexture = specGlossEmit;
-    m_meshComponent->m_shader               = g_theRenderer->CreateShaderFromFile(ParseXmlAttribute(*chessBoardElement, "shader", std::string()).c_str(), VertexType::Vertex_PCUTBN);
+    m_meshComponent->m_shader               = g_theRenderer->CreateOrGetShader(ParseXmlAttribute(*chessBoardElement, "shader", std::string()).c_str(), VertexType::Vertex_PCUTBN);
     return this;
 }
 

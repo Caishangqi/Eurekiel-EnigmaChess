@@ -8,7 +8,7 @@ class Camera;
 
 struct RenderContext
 {
-    Renderer&         renderer; //Globally unique Renderer
+    IRenderer&         renderer; //Globally unique Renderer
     const Camera&     camera; // The Camera currently being rendered
     LightingConstants lightingConstants{};
     FrameConstants    frameConstants{};

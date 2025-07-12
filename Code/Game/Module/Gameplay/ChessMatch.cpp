@@ -17,6 +17,7 @@
 #include "Game/Core/Component/CollisionComponent.hpp"
 #include "Game/Core/Component/MeshComponent.hpp"
 #include "Game/Module/Definition/ChessPieceDefinition.hpp"
+#include "Game/Module/Test/TestModelActor.hpp"
 
 ChessMatch::ChessMatch(Game* game) : m_game(game)
 {
@@ -62,6 +63,11 @@ ChessMatch::ChessMatch(Game* game) : m_game(game)
         .SetOuterRadius(8.0f)
         .SetInnerAngle(10.f)
         .SetOuterAngle(20.f);
+
+    /// Debug Model Loader
+    /// TODO: Remove at release
+    TestModelActor* testModelActor = new TestModelActor();
+    SpawnActor(Vec3(4, 4, 4), EulerAngles(), testModelActor);
 }
 
 ChessMatch::~ChessMatch()
@@ -95,7 +101,7 @@ void ChessMatch::FromXML(const XmlElement& xmlElement)
         m_factions.push_back(faction);
         elementFraction = elementFraction->NextSiblingElement();
     }
-    Texture* chessPiecesTexture = g_theRenderer->CreateOrGetTextureFromFile(ParseXmlAttribute(*chessPiecesElement, "texture", std::string()).c_str());
+    Texture* chessPiecesTexture = g_theRenderer->CreateOrGetTexture(ParseXmlAttribute(*chessPiecesElement, "texture", std::string()).c_str());
     while (element != nullptr)
     {
         std::string position                     = ParseXmlAttribute(*element, "position", position);

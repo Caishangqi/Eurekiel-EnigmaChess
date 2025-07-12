@@ -3,12 +3,12 @@
 #include "Renderable.hpp"
 #include "RenderContext.hpp"
 #include "Engine/Core/EngineCommon.hpp"
-#include "Engine/Renderer/Renderer.hpp"
+#include "Engine/Renderer/IRenderer.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Core/LoggerSubsystem.hpp"
 #include "Game/Core/Component/Component.hpp"
 
-RenderSubsystem::RenderSubsystem(Renderer& renderer): m_renderer(renderer)
+RenderSubsystem::RenderSubsystem(IRenderer& renderer): m_renderer(renderer)
 {
 }
 
