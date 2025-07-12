@@ -189,7 +189,9 @@
         <Content Include="..\..\Run\Data\GameConfig.xml"/>
     </ItemGroup>
     <ItemGroup>
-        <Content Include="..\..\Run\Data\Shaders\Default.hlsl"/>
+        <Content Include="..\..\Run\Data\Models\ExampleModel.xml" />
+        <Content Include="..\..\Run\Data\ServerConfig.xml" />
+        <Content Include="..\..\Run\Data\Shaders\Default.hlsl" />
         <Content Include="..\..\Run\Data\Shaders\Diffuse.hlsl" />
         <Content Include="..\..\Run\Data\Shaders\BlinnPhong.hlsl" />
         <ClCompile Include="..\..\Run\Data\Shaders\ShaderMath.hlsl" />
@@ -218,19 +220,20 @@
         <ClCompile Include="Module\Model\BakeModelChessBoard.cpp" />
         <ClCompile Include="Module\Model\BakeModelKing.cpp" />
         <ClCompile Include="Module\Model\BakeModelPawn.cpp" />
-        <ClCompile Include="Module\Model\BakeModelQueen.cpp"/>
+        <ClCompile Include="Module\Model\BakeModelQueen.cpp" />
         <ClCompile Include="Module\Model\BakeModelRook.cpp" />
         <ClCompile Include="Module\Model\GeometryCommon.cpp" />
-        <ClCompile Include="Player.cpp"/>
-        <ClCompile Include="Prop.cpp"/>
-        <ClCompile Include="App.cpp"/>
-        <ClCompile Include="Entity.cpp"/>
-        <ClCompile Include="Game.cpp"/>
-        <ClCompile Include="GameCommon.cpp"/>
-        <ClCompile Include="Main_Windows.cpp"/>
+        <ClCompile Include="Module\Test\TestModelActor.cpp" />
+        <ClCompile Include="Player.cpp" />
+        <ClCompile Include="Prop.cpp" />
+        <ClCompile Include="App.cpp" />
+        <ClCompile Include="Entity.cpp" />
+        <ClCompile Include="Game.cpp" />
+        <ClCompile Include="GameCommon.cpp" />
+        <ClCompile Include="Main_Windows.cpp" />
     </ItemGroup>
     <ItemGroup>
-        <ClInclude Include="App.hpp"/>
+        <ClInclude Include="App.hpp" />
         <ClInclude Include="Core\Actor\Actor.hpp" />
         <ClInclude Include="Core\Component\CollisionComponent.hpp" />
         <ClInclude Include="Core\Component\Component.hpp" />
@@ -243,10 +246,10 @@
         <ClInclude Include="Core\Serilization\Serializable.hpp" />
         <ClInclude Include="Core\Widget.hpp" />
         <ClInclude Include="Core\WidgetSubsystem.hpp" />
-        <ClInclude Include="EngineBuildPreferences.hpp"/>
-        <ClInclude Include="Entity.hpp"/>
-        <ClInclude Include="Game.hpp"/>
-        <ClInclude Include="GameCommon.hpp"/>
+        <ClInclude Include="EngineBuildPreferences.hpp" />
+        <ClInclude Include="Entity.hpp" />
+        <ClInclude Include="Game.hpp" />
+        <ClInclude Include="GameCommon.hpp" />
         <ClInclude Include="Module\Debug\WidgetDebugPanel.hpp" />
         <ClInclude Include="Module\Definition\ChessPieceDefinition.hpp" />
         <ClInclude Include="Module\Gameplay\CameraState.h" />
@@ -266,8 +269,9 @@
         <ClInclude Include="Module\Model\BakeModelQueen.hpp" />
         <ClInclude Include="Module\Model\BakeModelRook.hpp" />
         <ClInclude Include="Module\Model\GeometryCommon.hpp" />
-        <ClInclude Include="Player.hpp"/>
-        <ClInclude Include="Prop.hpp"/>
+        <ClInclude Include="Module\Test\TestModelActor.hpp" />
+        <ClInclude Include="Player.hpp" />
+        <ClInclude Include="Prop.hpp" />
     </ItemGroup>
     <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
     <ImportGroup Label="ExtensionTargets">
