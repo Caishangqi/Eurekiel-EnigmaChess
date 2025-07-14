@@ -66,7 +66,7 @@ Actor* ChessPiece::FromXML(const XmlElement& element)
     m_definition = ChessPieceDefinition::GetByName(ParseXmlAttribute(element, "name", std::string()));
     m_faction    = ParseXmlAttribute(element, "faction", m_faction);
     UpdateGlyph();
-    m_meshComponent->m_color                = ChessMatchCommon::GetFaction(m_faction, _outer)->m_color;
+    m_meshComponent->m_color                = GetFaction(m_faction, _outer)->m_color;
     m_meshComponent->m_shader               = m_definition->m_shader;
     m_meshComponent->m_diffuseTexture       = m_definition->m_texture;
     m_meshComponent->m_normalTexture        = m_definition->m_normalTexture;
@@ -76,7 +76,7 @@ Actor* ChessPiece::FromXML(const XmlElement& element)
     return this;
 }
 
-ChessMatchCommon::MoveResult ChessPiece::ChessMove(IntVec2 fromPos, IntVec2 toPos, std::string strFrom, std::string strTo)
+MoveResult ChessPiece::ChessMove(IntVec2 fromPos, IntVec2 toPos, std::string strFrom, std::string strTo)
 {
     MoveResult r;
     r.m_fromPosition       = fromPos;
@@ -98,8 +98,8 @@ ChessMatchCommon::MoveResult ChessPiece::ChessMove(IntVec2 fromPos, IntVec2 toPo
         return r;
     }
 
-    ChessGrid&  grid     = _match->m_chessGrid;
-    ChessPiece* dstPiece = dynamic_cast<ChessPiece*>(grid[toPos.x][toPos.y]);
+    ChessGrid& grid     = _match->m_chessGrid;
+    auto       dstPiece = dynamic_cast<ChessPiece*>(grid[toPos.x][toPos.y]);
     if (dstPiece && dstPiece->m_faction == m_faction)
     {
         r.m_moveResult = ChessMoveResult::INVALID_MOVE_DESTINATION_BLOCKED;
@@ -197,8 +197,8 @@ ChessMatchCommon::MoveResult ChessPiece::ChessMove(IntVec2 fromPos, IntVec2 toPo
             /* en passant */
             else
             {
-                IntVec2     sidePos  = fromPos + IntVec2(dx, 0); // 旁边那格
-                ChessPiece* sidePawn = dynamic_cast<ChessPiece*>(grid[sidePos.x][sidePos.y]);
+                IntVec2 sidePos  = fromPos + IntVec2(dx, 0); // 旁边那格
+                auto    sidePawn = dynamic_cast<ChessPiece*>(grid[sidePos.x][sidePos.y]);
                 if (sidePawn && sidePawn->m_definition->m_name == "Pawn" &&
                     sidePawn->m_faction != m_faction &&
                     sidePawn->m_movedTwoSquaresLastTurn &&
@@ -241,9 +241,9 @@ ChessMatchCommon::MoveResult ChessPiece::ChessMove(IntVec2 fromPos, IntVec2 toPo
             }
             else
             {
-                bool        kingSide = dx > 0;
-                IntVec2     rookPos  = kingSide ? IntVec2(7, fromPos.y) : IntVec2(0, fromPos.y);
-                ChessPiece* rook     = dynamic_cast<ChessPiece*>(grid[rookPos.x][rookPos.y]);
+                bool    kingSide = dx > 0;
+                IntVec2 rookPos  = kingSide ? IntVec2(7, fromPos.y) : IntVec2(0, fromPos.y);
+                auto    rook     = dynamic_cast<ChessPiece*>(grid[rookPos.x][rookPos.y]);
                 if (!rook || rook->m_definition->m_name != "Rook")
                     r.m_moveResult = ChessMoveResult::INVALID_CASTLE_ROOK_HAS_MOVED;
                 else if (rook->m_hasMoved)
@@ -272,12 +272,12 @@ ChessMatchCommon::MoveResult ChessPiece::ChessMove(IntVec2 fromPos, IntVec2 toPo
     return r;
 }
 
-ChessMatchCommon::MoveResult ChessPiece::ChessMoveTeleport(IntVec2 fromPos, IntVec2 toPos, std::string strFrom, std::string strTo)
+MoveResult ChessPiece::ChessMoveTeleport(IntVec2 fromPos, IntVec2 toPos, std::string strFrom, std::string strTo)
 {
     MoveResult result;
     ChessGrid& grid = g_theGame->match->m_chessGrid;
 
-    ChessPiece* mover = dynamic_cast<ChessPiece*>(grid[fromPos.x][fromPos.y]);
+    auto mover = dynamic_cast<ChessPiece*>(grid[fromPos.x][fromPos.y]);
     if (!mover)
     {
         result.m_moveResult = ChessMoveResult::INVALID_MOVE_NO_PIECE;
@@ -288,7 +288,7 @@ ChessMatchCommon::MoveResult ChessPiece::ChessMoveTeleport(IntVec2 fromPos, IntV
         result.m_moveResult = ChessMoveResult::INVALID_MOVE_NOT_YOUR_PIECE;
         return result;
     }
-    ChessPiece* victim = dynamic_cast<ChessPiece*>(grid[toPos.x][toPos.y]);
+    auto victim = dynamic_cast<ChessPiece*>(grid[toPos.x][toPos.y]);
     // Teleport capture
     if (victim)
     {
@@ -297,10 +297,7 @@ ChessMatchCommon::MoveResult ChessPiece::ChessMoveTeleport(IntVec2 fromPos, IntV
             result.m_moveResult = ChessMoveResult::INVALID_MOVE_BAD_LOCATION;
             return result;
         }
-        else
-        {
-            result.m_moveResult = ChessMoveResult::VALID_CAPTURE_TELEPORT;
-        }
+        result.m_moveResult = ChessMoveResult::VALID_CAPTURE_TELEPORT;
     }
     else
     {
@@ -312,8 +309,8 @@ ChessMatchCommon::MoveResult ChessPiece::ChessMoveTeleport(IntVec2 fromPos, IntV
 ChessPiece* ChessPiece::ChessMoveInterpolate(IntVec2 fromPos, IntVec2 toPos)
 {
     m_animationTimer->Start();
-    m_animationPosition[0] = Vec3((float)fromPos.x + 0.5f, (float)fromPos.y + 0.5f, 0.0f);
-    m_animationPosition[1] = Vec3((float)toPos.x + 0.5f, (float)toPos.y + 0.5f, 0.0f);
+    m_animationPosition[0] = Vec3(static_cast<float>(fromPos.x) + 0.5f, static_cast<float>(fromPos.y) + 0.5f, 0.0f);
+    m_animationPosition[1] = Vec3(static_cast<float>(toPos.x) + 0.5f, static_cast<float>(toPos.y) + 0.5f, 0.0f);
 
     if (m_definition->m_slide)
         m_animationCallback = &ChessPiece::ChessMoveSlide;

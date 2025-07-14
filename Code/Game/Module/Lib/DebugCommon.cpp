@@ -50,7 +50,7 @@ bool DebugCommon::Command_Debug(EventArgs& args)
             {
                 g_theDevConsole->AddLine(DevConsole::COLOR_WARNING, "Invalid Debug view" + pair.second);
             }
-            FrameConstants frameConstants{game->m_clock->GetTotalSeconds(), (int)game->m_shaderDebugType, 0.f, (int)game->m_debugViewMode};
+            FrameConstants frameConstants{game->m_clock->GetTotalSeconds(), static_cast<int>(game->m_shaderDebugType), 0.f, static_cast<int>(game->m_debugViewMode)};
             game->m_frameConstants = frameConstants;
             g_theRenderer->SetFrameConstants(frameConstants);
             return true;

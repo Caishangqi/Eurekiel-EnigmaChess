@@ -1,6 +1,6 @@
 <ServerConfig
         serverIP="127.0.0.1"
-        serverPort="25565"
+        serverPort="3100"
         maxPlayers="2"
         motd="Welcome to the Chess3D Server!"
         cachedBufferSize="2048"

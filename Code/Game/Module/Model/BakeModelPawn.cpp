@@ -39,5 +39,5 @@ void BakeModelPawn::Build()
     Sphere sphere;
     sphere.m_position = Vec3(0.f, 0.f, 0.65f);
     sphere.m_radius   = 0.20f;
-    sphere.BuildVertices(verts, indices,256);
+    sphere.BuildVertices(verts, indices, 256);
 }

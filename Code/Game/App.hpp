@@ -13,7 +13,7 @@ public:
     App();
     ~App();
 
-    void Startup();
+    void Startup(char* commandLineString = nullptr);
     void Shutdown();
     void RunFrame();
 

@@ -12,7 +12,7 @@ public:
     void OnTick(float deltaTime) override;
 
     Actor* FromXML(const XmlElement& element) override;
-    
+
     static bool Event_Highlight_Enable(EventArgs& args);
     static bool Event_Highlight_Disable(EventArgs& args);
 

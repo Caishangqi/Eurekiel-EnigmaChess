@@ -9,7 +9,6 @@ class WidgetDebugPanel : public Widget
 public:
     WidgetDebugPanel();
 
-public:
     void OnInit() override;
     void Draw() const override;
     void Update() override;

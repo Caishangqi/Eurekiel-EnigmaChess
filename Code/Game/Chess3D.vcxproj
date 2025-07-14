@@ -200,6 +200,7 @@
         <ClCompile Include="Core\Component\Component.cpp" />
         <ClCompile Include="Core\Component\MeshComponent.cpp" />
         <ClCompile Include="Core\LoggerSubsystem.cpp" />
+        <ClCompile Include="Core\Network\NetworkDispatcher.cpp" />
         <ClCompile Include="Core\Render\BakedModel.cpp" />
         <ClCompile Include="Core\Render\Renderable.cpp" />
         <ClCompile Include="Core\Render\RenderSubsystem.cpp" />
@@ -225,7 +226,6 @@
         <ClCompile Include="Module\Model\GeometryCommon.cpp" />
         <ClCompile Include="Module\Test\TestModelActor.cpp" />
         <ClCompile Include="Player.cpp" />
-        <ClCompile Include="Prop.cpp" />
         <ClCompile Include="App.cpp" />
         <ClCompile Include="Entity.cpp" />
         <ClCompile Include="Game.cpp" />
@@ -239,6 +239,7 @@
         <ClInclude Include="Core\Component\Component.hpp" />
         <ClInclude Include="Core\Component\MeshComponent.hpp" />
         <ClInclude Include="Core\LoggerSubsystem.hpp" />
+        <ClInclude Include="Core\Network\NetworkDispatcher.hpp" />
         <ClInclude Include="Core\Render\BakedModel.hpp" />
         <ClInclude Include="Core\Render\Renderable.hpp" />
         <ClInclude Include="Core\Render\RenderContext.hpp" />
@@ -271,7 +272,6 @@
         <ClInclude Include="Module\Model\GeometryCommon.hpp" />
         <ClInclude Include="Module\Test\TestModelActor.hpp" />
         <ClInclude Include="Player.hpp" />
-        <ClInclude Include="Prop.hpp" />
     </ItemGroup>
     <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
     <ImportGroup Label="ExtensionTargets">

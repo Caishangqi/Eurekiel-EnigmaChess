@@ -10,7 +10,7 @@ class CollisionComponent : public IComponent, public IRenderable
 {
     COMPONENT_CLASS(CollisionComponent)
 
-public: // IComponent
+    // IComponent
     CollisionComponent();
     ~CollisionComponent() override;
 
@@ -22,11 +22,11 @@ public: // IComponent
     IComponent* FromXML(const XmlElement& xmlElement) override;
     XmlElement* ToXML() const override;
 
-public: // IRenderable
+    // IRenderable
 
     void Render(const RenderContext& ctx) override;
 
-public: // Current
+    // Current
     CollisionComponent* SetCollisionBox(AABB3& collisionBox); // This method will automatically set the local space of aabb3
     RaycastResult3D     Raycast(const Vec3& origin, const Vec3& direction, float maxDistance);
     AABB3               GetCollisionBox(bool worldSpace = true);

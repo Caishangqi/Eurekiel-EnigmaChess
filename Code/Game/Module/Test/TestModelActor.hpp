@@ -5,7 +5,6 @@ class CollisionComponent;
 class MeshComponent;
 
 
-
 class TestModelActor : public Actor
 {
 public:

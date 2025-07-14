@@ -63,11 +63,11 @@ void WidgetDebugPanel::Update()
     DebugAddScreenText(">> Debug View Modes", panel, 10.f, 0.f, Rgba8::WHITE, Rgba8::WHITE, Vec2(0.f, 1.0f));
     panel.m_mins.y -= 20.f;
     panel.m_maxs.y -= 20.f;
-    DebugAddScreenText(Stringf(" > Render Mode: (%d) %s", (int)g_theGame->m_shaderDebugType, to_string(g_theGame->m_shaderDebugType)), panel, 10.f, 0.f, Rgba8::DEBUG_GREEN, Rgba8::DEBUG_GREEN,
+    DebugAddScreenText(Stringf(" > Render Mode: (%d) %s", g_theGame->m_shaderDebugType, to_string(g_theGame->m_shaderDebugType)), panel, 10.f, 0.f, Rgba8::DEBUG_GREEN, Rgba8::DEBUG_GREEN,
                        Vec2(0.f, 1.0f));
     panel.m_mins.y -= 20.f;
     panel.m_maxs.y -= 20.f;
-    DebugAddScreenText(Stringf(" > View Mode: (%d) %s", (int)g_theGame->m_debugViewMode, to_string(g_theGame->m_debugViewMode)), panel, 10.f, 0.f, Rgba8::DEBUG_GREEN, Rgba8::DEBUG_GREEN,
+    DebugAddScreenText(Stringf(" > View Mode: (%d) %s", g_theGame->m_debugViewMode, to_string(g_theGame->m_debugViewMode)), panel, 10.f, 0.f, Rgba8::DEBUG_GREEN, Rgba8::DEBUG_GREEN,
                        Vec2(0.f, 1.0f));
     panel.m_mins.y -= 20.f;
     panel.m_maxs.y -= 20.f;

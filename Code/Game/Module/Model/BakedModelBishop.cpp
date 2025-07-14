@@ -39,10 +39,10 @@ void BakedModelBishop::Build()
     Sphere sphere;
     sphere.m_position = Vec3(0.f, 0.f, 0.85f);
     sphere.m_radius   = 0.30f;
-    sphere.BuildVertices(verts, indices,256);
+    sphere.BuildVertices(verts, indices, 256);
 
     Sphere sphereTop;
     sphereTop.m_position = Vec3(0.f, 0.f, 1.1f);
     sphereTop.m_radius   = 0.08f;
-    sphereTop.BuildVertices(verts, indices,256);
+    sphereTop.BuildVertices(verts, indices, 256);
 }

@@ -80,9 +80,9 @@ void MeshComponent::Render(const RenderContext& ctx)
     if (!m_vertexesPCUTBN.empty() && m_indexBuffer != nullptr)
         ctx.renderer.DrawVertexIndexed(m_vertexBufferPCUTBN, m_indexBuffer, static_cast<int>(m_indices.size()));
     if (!m_vertexesPCUTBN.empty() && m_indexBuffer == nullptr)
-        ctx.renderer.DrawVertexBuffer(m_vertexBufferPCUTBN, (int)m_vertexesPCUTBN.size());
+        ctx.renderer.DrawVertexBuffer(m_vertexBufferPCUTBN, static_cast<int>(m_vertexesPCUTBN.size()));
     if (!m_vertexesPCU.empty())
-        ctx.renderer.DrawVertexBuffer(m_vertexBufferPCU, (int)m_vertexesPCU.size());
+        ctx.renderer.DrawVertexBuffer(m_vertexBufferPCU, static_cast<int>(m_vertexesPCU.size()));
 }
 
 MeshComponent* MeshComponent::AppendVertices(std::vector<Vertex_PCUTBN> vertices, std::vector<unsigned int>& indices)

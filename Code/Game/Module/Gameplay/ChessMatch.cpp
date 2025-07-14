@@ -66,7 +66,7 @@ ChessMatch::ChessMatch(Game* game) : m_game(game)
 
     /// Debug Model Loader
     /// TODO: Remove at release
-    TestModelActor* testModelActor = new TestModelActor();
+    auto testModelActor = new TestModelActor();
     SpawnActor(Vec3(4, 4, 4), EulerAngles(), testModelActor);
 }
 
@@ -174,7 +174,7 @@ ChessPiece* ChessMatch::AddChessPieceToMatch(ChessPiece* chessPiece, std::string
 ChessPiece* ChessMatch::ExecuteChessMove(IntVec2 fromPos, IntVec2 toPos, std::string strFrom, std::string strTo, Strings meta)
 {
     using namespace ChessMatchCommon;
-    ChessPiece* mover = dynamic_cast<ChessPiece*>(m_chessGrid[fromPos.x][fromPos.y]);
+    auto mover = dynamic_cast<ChessPiece*>(m_chessGrid[fromPos.x][fromPos.y]);
     if (!mover)
     {
         g_theDevConsole->AddLine(DevConsole::COLOR_WARNING,
@@ -217,7 +217,7 @@ ChessPiece* ChessMatch::ExecuteChessMove(IntVec2 fromPos, IntVec2 toPos, std::st
         IntVec2 rookFrom = kingSide ? IntVec2(7, fromPos.y) : IntVec2(0, fromPos.y);
         IntVec2 rookTo   = fromPos + IntVec2(dir, 0);
 
-        ChessPiece* rook                    = dynamic_cast<ChessPiece*>(m_chessGrid[rookFrom.x][rookFrom.y]);
+        auto rook                           = dynamic_cast<ChessPiece*>(m_chessGrid[rookFrom.x][rookFrom.y]);
         m_chessGrid[rookFrom.x][rookFrom.y] = nullptr;
         m_chessGrid[rookTo.x][rookTo.y]     = rook;
         rook->m_gridCurrentPosition         = rookTo;
@@ -283,7 +283,7 @@ ChessMatchCommon::MoveResult ChessMatch::ExecuteChessTeleport(IntVec2 fromPos, I
 {
     ChessMatchCommon::MoveResult result;
     using namespace ChessMatchCommon;
-    ChessPiece* mover = dynamic_cast<ChessPiece*>(m_chessGrid[fromPos.x][fromPos.y]);
+    auto mover = dynamic_cast<ChessPiece*>(m_chessGrid[fromPos.x][fromPos.y]);
     if (!mover)
     {
         result.m_moveResult = ChessMoveResult::INVALID_MOVE_NO_PIECE;
@@ -296,7 +296,7 @@ ChessMatchCommon::MoveResult ChessMatch::ExecuteChessTeleport(IntVec2 fromPos, I
         g_theDevConsole->AddLine(DevConsole::COLOR_WARNING, to_string(result.m_moveResult));
         return result;
     }
-    ChessPiece* victim = dynamic_cast<ChessPiece*>(m_chessGrid[toPos.x][toPos.y]);
+    auto victim = dynamic_cast<ChessPiece*>(m_chessGrid[toPos.x][toPos.y]);
     // Teleport capture
     if (victim)
     {
@@ -306,18 +306,15 @@ ChessMatchCommon::MoveResult ChessMatch::ExecuteChessTeleport(IntVec2 fromPos, I
             g_theDevConsole->AddLine(DevConsole::COLOR_WARNING, to_string(result.m_moveResult));
             return result;
         }
-        else
-        {
-            mover->ChessMoveInterpolate(fromPos, toPos);
-            mover->m_gridPreviousPosition     = fromPos;
-            mover->m_gridCurrentPosition      = toPos;
-            m_chessGrid[toPos.x][toPos.y]     = mover;
-            m_chessGrid[fromPos.x][fromPos.y] = nullptr;
-            result.m_piecesCapture            = victim;
-            victim->Destroy();
-            result.m_moveResult = ChessMoveResult::VALID_CAPTURE_TELEPORT;
-            g_theDevConsole->AddLine(DevConsole::COLOR_WARNING, to_string(result.m_moveResult));
-        }
+        mover->ChessMoveInterpolate(fromPos, toPos);
+        mover->m_gridPreviousPosition     = fromPos;
+        mover->m_gridCurrentPosition      = toPos;
+        m_chessGrid[toPos.x][toPos.y]     = mover;
+        m_chessGrid[fromPos.x][fromPos.y] = nullptr;
+        result.m_piecesCapture            = victim;
+        victim->Destroy();
+        result.m_moveResult = ChessMoveResult::VALID_CAPTURE_TELEPORT;
+        g_theDevConsole->AddLine(DevConsole::COLOR_WARNING, to_string(result.m_moveResult));
     }
     else
     {
@@ -363,7 +360,7 @@ ChessMatchCommon::RaycastResultChess ChessMatch::Raycast(const Vec3& origin, con
     for (Actor* actor : m_actors)
     {
         if (!actor) continue;
-        ChessObject* chessObject = dynamic_cast<ChessObject*>(actor);
+        auto chessObject = dynamic_cast<ChessObject*>(actor);
         if (!chessObject)continue;
         if (chessObject->GetIsGarbage()) continue;
         CollisionComponent* collisionComponent = chessObject->GetComponent<CollisionComponent>();

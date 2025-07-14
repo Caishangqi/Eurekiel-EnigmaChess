@@ -62,7 +62,7 @@ bool ChessBoard::Event_Highlight_Enable(EventArgs& args)
     if (!chessBoard)
         return false;
     chessBoard->m_squareHighlight->SetEnable(true);
-    chessBoard->m_squareHighlight->SetPosition(Vec3((float)gridPos.x + 0.5f, (float)gridPos.y + 0.5f, -0.25f));
+    chessBoard->m_squareHighlight->SetPosition(Vec3(static_cast<float>(gridPos.x) + 0.5f, static_cast<float>(gridPos.y) + 0.5f, -0.25f));
     return true;
 }
 

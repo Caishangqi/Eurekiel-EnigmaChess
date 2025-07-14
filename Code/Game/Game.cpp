@@ -1,4 +1,5 @@
-﻿#include <Game/Game.hpp>
+﻿#include <iostream>
+#include <Game/Game.hpp>
 
 #include "Engine/Core/Clock.hpp"
 #include "Engine/Core/EngineCommon.hpp"
@@ -21,9 +22,10 @@
 #include "App.hpp"
 #include "GameCommon.hpp"
 #include "Player.hpp"
-#include "Prop.hpp"
 #include "Core/WidgetSubsystem.hpp"
+#include "Core/Network/NetworkDispatcher.hpp"
 #include "Core/Render/RenderSubsystem.hpp"
+#include "Engine/Network/NetworkSubsystem.hpp"
 #include "Module/Debug/WidgetDebugPanel.hpp"
 #include "Module/Lib/DebugCommon.hpp"
 
@@ -33,6 +35,9 @@ Game::Game()
     g_theLoggerSubsystem->SetMinVerbosity(ELogVerbosity::Info);
     g_theLoggerSubsystem->EnableCategory(ELogCategory::LogGame);
     g_theLoggerSubsystem->EnableCategory(ELogCategory::LogResource);
+
+    /// Networking
+    InitializeNetworking();
 
     /// Event Callback
     g_theEventSystem->SubscribeEventCallbackFunction("CharInput", Event_DebugCharInput);
@@ -49,7 +54,12 @@ Game::Game()
     /// Command Registration
     g_theDevConsole->RegisterCommand("ChessMove", "None", ChessMatchCommon::Command_ChessMove);
     g_theDevConsole->RegisterCommand("ChessMatch", "None", ChessMatchCommon::Command_ChessMatch);
+    g_theDevConsole->RegisterCommand("ChessServerInfo", "None", ChessMatchCommon::Command_ChessServerInfo);
+    g_theDevConsole->RegisterCommand("ChessListen", "None", ChessMatchCommon::Command_ChessListen);
+    g_theDevConsole->RegisterCommand("ChessConnect", "None", ChessMatchCommon::Command_ChessConnect);
+    g_theDevConsole->RegisterCommand("ChessDisconnect", "None", ChessMatchCommon::Command_ChessDisconnect);
     g_theDevConsole->RegisterCommand("Debug", "None", DebugCommon::Command_Debug);
+    g_theDevConsole->RegisterCommand("RemoteCmd", "None", ChessMatchCommon::Command_RemoteCmd);
 
     /// Rasterize
     g_theRenderer->SetRasterizerMode(RasterizerMode::SOLID_CULL_BACK);
@@ -79,94 +89,6 @@ Game::Game()
     m_player->m_position = Vec3(-2, 0, 1);
     /// 
 
-    /// Cube
-    m_cube   = new Prop(this);
-    m_cube_1 = new Prop(this);
-
-    AddVertsForCube3D(m_cube->m_vertexes, Rgba8(255, 0, 0), Rgba8(0, 255, 255), Rgba8(0, 255, 0), Rgba8(255, 0, 255), Rgba8(0, 0, 255), Rgba8(255, 255, 0));
-    AddVertsForCube3D(m_cube_1->m_vertexes, Rgba8(255, 0, 0), Rgba8(0, 255, 255), Rgba8(0, 255, 0), Rgba8(255, 0, 255), Rgba8(0, 0, 255), Rgba8(255, 255, 0));
-
-    m_cube->m_position   = Vec3(2, 2, 0);
-    m_cube_1->m_position = Vec3(-2, -2, 0);
-    ///
-
-    /// Test Prop
-    m_testProp             = new Prop(this);
-    m_testProp->m_position = Vec3(0, 0, 0);
-    //AddVertsForCylinder3D(m_testProp->m_vertexes,Vec3(0,2,0),Vec3(0,0,0),1);
-    //AddVertsForCone3D(m_testProp->m_vertexes,Vec3(0,2,0),Vec3(0,0,0),1);
-    AddVertsForArrow3D(m_testProp->m_vertexes, Vec3(0, 2, 0), Vec3(0, 0, 0), 0.1f, 0.4f);
-    /// 
-
-    /// Ball
-    m_ball             = new Prop(this);
-    m_ball->m_position = Vec3(10, -5, 1);
-    m_ball->m_texture  = g_theRenderer->CreateOrGetTexture("Data/Images/TestUV.png");
-    AddVertsForSphere3D(m_ball->m_vertexes, Vec3(0, 0, 0), 2, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 64, 32);
-    /// 
-
-    /// Grid
-    m_grid_x = new Prop(this);
-    AddVertsForCube3D(m_grid_x->m_vertexes, Rgba8::RED);
-    m_grid_x->m_scale = Vec3(GRID_SIZE * 2.f, 0.1f, 0.1f);
-    m_grid_y          = new Prop(this);
-
-    AddVertsForCube3D(m_grid_y->m_vertexes, Rgba8::GREEN);
-    m_grid_y->m_scale = Vec3(0.1f, GRID_SIZE * 2.f, 0.1f);
-
-    m_grid_x_unit_5.resize(GRID_SIZE * 2 / GRID_UNIT_SIZE + 1);
-    for (int i = 0; i < GRID_SIZE * 2 / GRID_UNIT_SIZE + 1; i++)
-    {
-        m_grid_x_unit_5[i] = new Prop(this);
-        if (i == ((GRID_SIZE * 2 / GRID_UNIT_SIZE) / 2))
-        {
-            continue;
-        }
-        AddVertsForCube3D(m_grid_x_unit_5[i]->m_vertexes, Rgba8(191, 0, 0));
-        m_grid_x_unit_5[i]->m_scale    = Vec3(GRID_SIZE * 2.f, 0.06f, 0.06f);
-        m_grid_x_unit_5[i]->m_position = Vec3(0, GRID_SIZE * 1.f - static_cast<float>(i) * 5.f, 0);
-    }
-
-    m_grid_x_unit_1.resize(GRID_SIZE * 2 + 1);
-    for (int i = 0; i < GRID_SIZE * 2 + 1; i++)
-    {
-        m_grid_x_unit_1[i] = new Prop(this);
-        if ((i % GRID_UNIT_SIZE) == 0)
-        {
-            continue;
-        }
-        AddVertsForCube3D(m_grid_x_unit_1[i]->m_vertexes, Rgba8(127, 127, 127));
-        m_grid_x_unit_1[i]->m_scale    = Vec3(GRID_SIZE * 2.f, 0.03f, 0.03f);
-        m_grid_x_unit_1[i]->m_position = Vec3(0, GRID_SIZE * 1.f - static_cast<float>(i), 0);
-    }
-
-    m_grid_y_unit_5.resize(GRID_SIZE * 2 / GRID_UNIT_SIZE + 1);
-    for (int i = 0; i < GRID_SIZE * 2 / GRID_UNIT_SIZE + 1; i++)
-    {
-        m_grid_y_unit_5[i] = new Prop(this);
-        if (i == ((GRID_SIZE * 2 / GRID_UNIT_SIZE) / 2))
-        {
-            continue;
-        }
-        AddVertsForCube3D(m_grid_y_unit_5[i]->m_vertexes, Rgba8(0, 191, 0));
-        m_grid_y_unit_5[i]->m_scale    = Vec3(0.06f, GRID_SIZE * 2.f, 0.06f);
-        m_grid_y_unit_5[i]->m_position = Vec3(GRID_SIZE * 1.f - static_cast<float>(i) * 5.f, 0, 0);
-    }
-
-    m_grid_y_unit_1.resize(GRID_SIZE * 2 + 1);
-    for (int i = 0; i < GRID_SIZE * 2 + 1; i++)
-    {
-        m_grid_y_unit_1[i] = new Prop(this);
-        if ((i % GRID_UNIT_SIZE) == 0)
-        {
-            continue;
-        }
-        AddVertsForCube3D(m_grid_y_unit_1[i]->m_vertexes, Rgba8(127, 127, 127));
-        m_grid_y_unit_1[i]->m_scale    = Vec3(0.03f, GRID_SIZE * 2.f, 0.03f);
-        m_grid_y_unit_1[i]->m_position = Vec3(GRID_SIZE * 1.f - static_cast<float>(i), 0, 0);
-    }
-    ///
-
     /// Debug Drawing
 
     // Arrows
@@ -193,38 +115,17 @@ Game::Game()
     g_theInput->SetCursorMode(CursorMode::POINTER);
 
     /// Frame Constant
-    FrameConstants frameConstants{m_clock->GetTotalSeconds(), (int)m_shaderDebugType, 0.f, (int)m_debugViewMode};
+    FrameConstants frameConstants{m_clock->GetTotalSeconds(), static_cast<int>(m_shaderDebugType), 0.f, static_cast<int>(m_debugViewMode)};
     m_frameConstants = frameConstants;
     g_theRenderer->SetFrameConstants(frameConstants);
 
     /// Debug Pannel
-    WidgetDebugPanel* debugPanel = new WidgetDebugPanel();
+    auto debugPanel = new WidgetDebugPanel();
     g_theWidgetSubsystem->AddToViewport(debugPanel);
 }
 
 Game::~Game()
 {
-    POINTER_SAFE_DELETE(m_grid_x)
-    POINTER_SAFE_DELETE(m_grid_y)
-    for (Prop* grid_x_unit_5 : m_grid_x_unit_5)
-    {
-        POINTER_SAFE_DELETE(grid_x_unit_5)
-    }
-    for (Prop* grid_x_unit_1 : m_grid_x_unit_1)
-    {
-        POINTER_SAFE_DELETE(grid_x_unit_1)
-    }
-    for (Prop* grid_y_unit_5 : m_grid_y_unit_5)
-    {
-        POINTER_SAFE_DELETE(grid_y_unit_5)
-    }
-    for (Prop* grid_y_unit_1 : m_grid_y_unit_1)
-    {
-        POINTER_SAFE_DELETE(grid_y_unit_1)
-    }
-    POINTER_SAFE_DELETE(m_ball)
-    POINTER_SAFE_DELETE(m_cube_1)
-    POINTER_SAFE_DELETE(m_cube)
     POINTER_SAFE_DELETE(m_player)
     POINTER_SAFE_DELETE(m_screenCamera)
     POINTER_SAFE_DELETE(m_spectatorCamera)
@@ -282,40 +183,58 @@ void Game::EnterCameraState(ECameraState state)
     cameraState = state;
 }
 
-void Game::RenderGrids() const
+void Game::InitializeNetworking()
 {
-    m_grid_x->Render();
-    m_grid_y->Render();
-    for (Prop* grid_x_unit : m_grid_x_unit_5)
-    {
-        grid_x_unit->Render();
-    }
-    for (Prop* grid_x_unit : m_grid_x_unit_1)
-    {
-        grid_x_unit->Render();
-    }
-    for (Prop* grid_y_unit : m_grid_y_unit_5)
-    {
-        grid_y_unit->Render();
-    }
-    for (Prop* grid_y_unit : m_grid_y_unit_1)
-    {
-        grid_y_unit->Render();
-    }
-}
+    NetworkConfig config;
 
-void Game::RenderProps() const
-{
-    g_theRenderer->BindTexture(nullptr);
-    m_cube->Render();
-    m_cube_1->Render();
-    m_ball->Render();
-    //m_testProp->Render();
+    // 基本配置
+    config.serverPort = 3100;
+    config.serverIp   = "127.0.0.1";
+    config.maxPlayers = 4;
+
+    // 根据游戏需求选择发送模式
+    bool isCompetitiveMode      = g_gameConfigBlackboard.GetValue("competitiveMode", false);
+    bool dedicatedNetworkThread = g_gameConfigBlackboard.GetValue("dedicatedNetworkThread", false);
+
+    if (dedicatedNetworkThread)
+    {
+        // 如果有专用网络线程，可以使用阻塞模式
+        config.sendMode = SendMode::BLOCKING;
+        std::cout << "Using BLOCKING send mode (dedicated network thread)" << std::endl;
+    }
+    else if (isCompetitiveMode)
+    {
+        // 竞技模式：严格的性能限制
+        config.sendMode                                 = SendMode::NON_BLOCKING;
+        config.performanceLimits.maxNetworkTimePerFrame = 0.001; // 1ms
+        config.performanceLimits.maxSendBytesPerFrame   = 2048; // 2KB
+        std::cout << "Using NON_BLOCKING send mode (competitive)" << std::endl;
+    }
+    else
+    {
+        // 休闲模式：宽松的性能限制
+        config.sendMode                                 = SendMode::NON_BLOCKING;
+        config.performanceLimits.maxNetworkTimePerFrame = 0.003; // 3ms
+        config.performanceLimits.maxSendBytesPerFrame   = 8192; // 8KB
+        std::cout << "Using NON_BLOCKING send mode (casual)" << std::endl;
+    }
+
+    // 消息边界模式
+    config.boundaryMode     = MessageBoundaryMode::NULL_TERMINATED;
+    config.messageDelimiter = '\0';
+
+    // 安全设置
+    config.safetyLimits.enableSafetyChecks = true;
+    config.safetyLimits.maxMessageSize     = 32 * 1024; // 32KB
+
+    m_dispatcher = new NetworkDispatcher(g_theNetworkSubsystem);
 }
 
 
 void Game::Update()
 {
+    m_dispatcher->ExecuteRemoteCmd();
+
     if (gameState == EGameState::ATTRACT)
     {
         g_theInput->SetCursorMode(CursorMode::POINTER);
@@ -326,21 +245,6 @@ void Game::Update()
     m_player->Update(Clock::GetSystemClock().GetDeltaSeconds());
     ///
 
-    /// Cube
-    float brightnessFactor = CycleValue(m_clock->GetTotalSeconds(), 1.f);
-    auto  color            = Rgba8(
-        static_cast<unsigned char>(brightnessFactor * 255),
-        static_cast<unsigned char>(brightnessFactor * 255),
-        static_cast<unsigned char>(brightnessFactor * 255),
-        255);
-    m_cube_1->m_color = color;
-    m_cube->m_orientation.m_rollDegrees += m_clock->GetDeltaSeconds() * 30;
-    m_cube->m_orientation.m_pitchDegrees += m_clock->GetDeltaSeconds() * 30;
-    /// 
-
-    /// Sphere
-    m_ball->m_orientation.m_yawDegrees += m_clock->GetDeltaSeconds() * 45;
-    /// 
 
     g_theWidgetSubsystem->Update();
 
@@ -379,7 +283,7 @@ bool Game::Event_DebugCharInput(EventArgs& args)
         return false;
     }
     char inputChar = '0';
-    inputChar      = (char)args.GetValue("KeyCode", inputChar);
+    inputChar      = static_cast<char>(args.GetValue("KeyCode", inputChar));
     int numEnum    = inputChar - '0';
     if (numEnum < 0 || numEnum > 10)
     {
@@ -388,7 +292,7 @@ bool Game::Event_DebugCharInput(EventArgs& args)
     }
     Game* game              = g_theGame;
     game->m_shaderDebugType = static_cast<debug::ShaderDebugType>(numEnum);
-    FrameConstants frameConstants{game->m_clock->GetTotalSeconds(), (int)game->m_shaderDebugType, 0.f, (int)game->m_debugViewMode};
+    FrameConstants frameConstants{game->m_clock->GetTotalSeconds(), static_cast<int>(game->m_shaderDebugType), 0.f, static_cast<int>(game->m_debugViewMode)};
     game->m_frameConstants = frameConstants;
     g_theRenderer->SetFrameConstants(frameConstants);
     return false;

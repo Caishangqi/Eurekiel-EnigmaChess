@@ -49,15 +49,15 @@ void ChessPlayer::OnTick(float deltaTime)
     ChessMatchCommon::RaycastResultChess result = m_match->Raycast(start, forward, 10.f);
     if (result.m_didImpact)
     {
-        ChessBoard* board = dynamic_cast<ChessBoard*>(result.m_hitObject);
-        ChessPiece* piece = dynamic_cast<ChessPiece*>(result.m_hitObject);
+        auto board = dynamic_cast<ChessBoard*>(result.m_hitObject);
+        auto piece = dynamic_cast<ChessPiece*>(result.m_hitObject);
         if (board)
         {
             bool validDirection = result.m_impactNormal.z > 0.f;
             if (validDirection)
             {
-                m_match->m_impactSquare   = IntVec2((int)result.m_impactPos.x, (int)result.m_impactPos.y);
-                ChessPiece* pieceOnSquare = dynamic_cast<ChessPiece*>(m_match->m_chessGrid[m_match->m_impactSquare.x][m_match->m_impactSquare.y]);
+                m_match->m_impactSquare = IntVec2(static_cast<int>(result.m_impactPos.x), static_cast<int>(result.m_impactPos.y));
+                auto pieceOnSquare      = dynamic_cast<ChessPiece*>(m_match->m_chessGrid[m_match->m_impactSquare.x][m_match->m_impactSquare.y]);
                 if (pieceOnSquare && pieceOnSquare->m_faction == m_faction.m_id)
                     m_match->m_highLightedSquare = m_match->m_impactSquare;
             }

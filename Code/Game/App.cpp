@@ -13,20 +13,22 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
+#include "Engine/Network/NetworkSubsystem.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/DebugRenderSystem.h"
 #include "Engine/Renderer/Renderer.hpp"
 
-Window*                g_theWindow          = nullptr;
-IRenderer*             g_theRenderer        = nullptr;
-App*                   g_theApp             = nullptr;
-RandomNumberGenerator* g_rng                = nullptr;
-InputSystem*           g_theInput           = nullptr;
-AudioSystem*           g_theAudio           = nullptr;
-Game*                  g_theGame            = nullptr;
-RenderSubsystem*       g_theRenderSubsystem = nullptr;
-LoggerSubsystem*       g_theLoggerSubsystem = nullptr;
-WidgetSubsystem*       g_theWidgetSubsystem = nullptr;
+Window*                g_theWindow           = nullptr;
+IRenderer*             g_theRenderer         = nullptr;
+App*                   g_theApp              = nullptr;
+RandomNumberGenerator* g_rng                 = nullptr;
+InputSystem*           g_theInput            = nullptr;
+AudioSystem*           g_theAudio            = nullptr;
+Game*                  g_theGame             = nullptr;
+RenderSubsystem*       g_theRenderSubsystem  = nullptr;
+LoggerSubsystem*       g_theLoggerSubsystem  = nullptr;
+WidgetSubsystem*       g_theWidgetSubsystem  = nullptr;
+NetworkSubsystem*      g_theNetworkSubsystem = nullptr;
 
 App::App()
 {
@@ -43,7 +45,7 @@ App::~App()
     g_theInput = nullptr;
 }
 
-void App::Startup()
+void App::Startup(char* commandLineString)
 {
     // Load Game Config
     LoadGameConfig("Data/GameConfig.xml");
@@ -65,7 +67,7 @@ void App::Startup()
     WindowConfig windowConfig;
     windowConfig.m_aspectRatio = 2.f;
     windowConfig.m_inputSystem = g_theInput;
-    windowConfig.m_windowTitle = "Chess3D";
+    windowConfig.m_windowTitle = commandLineString == nullptr ? "Chess3D" : commandLineString;
     g_theWindow                = new Window(windowConfig);
 
     RenderConfig renderConfig;
@@ -101,6 +103,9 @@ void App::Startup()
     AudioSystemConfig audioConfig;
     g_theAudio = new AudioSystem(audioConfig);
 
+    NetworkConfig networkConfig;
+    g_theNetworkSubsystem = new NetworkSubsystem(networkConfig);
+
     g_theLoggerSubsystem->Startup();
     g_theEventSystem->Startup();
     g_theDevConsole->Startup();
@@ -111,6 +116,7 @@ void App::Startup()
     g_theWidgetSubsystem->Startup();
     DebugRenderSystemStartup(debugRenderConfig);
     g_theAudio->Startup();
+    g_theNetworkSubsystem->Startup();
 
     g_theGame = new Game();
     g_rng     = new RandomNumberGenerator();
@@ -126,6 +132,7 @@ void App::Shutdown()
     delete g_theGame;
     g_theGame = nullptr;
     // Shutdown all Engine Subsystem
+    g_theNetworkSubsystem->Shutdown();
     g_theAudio->Shutdown();
     g_theRenderSubsystem->Shutdown();
     g_theDevConsole->Shutdown();
@@ -310,7 +317,7 @@ void App::Update()
     }
 
     /// 
-
+    g_theNetworkSubsystem->Update();
     HandleKeyBoardEvent();
     AdjustForPauseAndTimeDistortion();
     g_theGame->Update();

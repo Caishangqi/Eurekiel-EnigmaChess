@@ -81,7 +81,6 @@ void CreateConsole()
 int WINAPI WinMain(HINSTANCE applicationInstanceHandle, HINSTANCE, LPSTR commandLineString, int)
 {
     UNUSED(applicationInstanceHandle)
-    UNUSED(commandLineString)
 
 #ifdef CONSOLE_HANDLER
     // Temporary Console, in SD-4 will draw by opengl
@@ -89,7 +88,7 @@ int WINAPI WinMain(HINSTANCE applicationInstanceHandle, HINSTANCE, LPSTR command
 #endif
 
     g_theApp = new App();
-    g_theApp->Startup();
+    g_theApp->Startup(commandLineString);
 
     // Program main loop; keep running frames until it's time to quit
     while (!g_theApp->IsQuitting()) // #SD1ToDo: ...becomes:  !g_theApp->IsQuitting()

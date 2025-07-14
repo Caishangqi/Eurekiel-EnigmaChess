@@ -22,7 +22,7 @@ bool DescendingZOrderPtr::operator()(const Widget* lhs, const Widget* rhs) const
     return lhs->GetZOrder() > rhs->GetZOrder();
 }
 
-WidgetSubsystem::WidgetSubsystem(WidgetSystemConfig config): m_config(config)
+WidgetSubsystem::WidgetSubsystem(WidgetSystemConfig config) : m_config(config)
 {
 }
 

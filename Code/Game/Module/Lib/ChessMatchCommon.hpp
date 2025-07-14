@@ -80,7 +80,7 @@ namespace ChessMatchCommon
         case ChessMoveResult::INVALID_CASTLE_THROUGH_CHECK: return "Invalid castle; king can't move through check";
         case ChessMoveResult::INVALID_CASTLE_OUT_OF_CHECK: return "Invalid castle; king can't castle out of check";
         case ChessMoveResult::UNKNOWN:
-            ERROR_AND_DIE(Stringf("Unhandled ChessMoveResult enum value #%d", (int)e))
+            ERROR_AND_DIE(Stringf("Unhandled ChessMoveResult enum value #%d", e))
         }
         return "UNKNOWN";
     }
@@ -112,17 +112,14 @@ namespace ChessMatchCommon
         float m_rayMaxLength = 1.f;
     };
 
-    [[nodiscard]]
-    IntVec2 GetGridPosition(std::string strPos);
-    [[nodiscard]]
-    bool GetStringPositionValidation(std::string strPos);
-    [[nodiscard]]
-    Faction* GetFaction(int fromID, ChessMatch* match);
-    Mat44    GetCameraTransform(ECameraState state, Vec3& position, EulerAngles& rotation, ChessMatch* match, std::string configValue = "above");
-    bool     GetAllPieces(ChessGrid& grid, std::vector<ChessPiece*>& pieces);
-    [[nodiscard]]
-    bool GetChessMoveValid(MoveResult result);
-    void PrintChessGrid(ChessGrid& grid);
+
+    [[nodiscard]] IntVec2  GetGridPosition(std::string strPos);
+    [[nodiscard]] bool     GetStringPositionValidation(std::string strPos);
+    [[nodiscard]] Faction* GetFaction(int fromID, ChessMatch* match);
+    Mat44                  GetCameraTransform(ECameraState state, Vec3& position, EulerAngles& rotation, ChessMatch* match, std::string configValue = "above");
+    bool                   GetAllPieces(ChessGrid& grid, std::vector<ChessPiece*>& pieces);
+    [[nodiscard]] bool     GetChessMoveValid(MoveResult result);
+    void                   PrintChessGrid(ChessGrid& grid);
     /// Get the args pair with specific key and entire Event args, the function will automatically split the args by split char and find the key
     /// index in the event args.
     /// @param inArgs the command prompt input args.
@@ -134,6 +131,12 @@ namespace ChessMatchCommon
     bool GetCommandHasValidSubArgs(EventArgs& inArgs, Strings& validSubArgs);
     int  GetCommandStringsWith(Strings& inStrings, std::string key, std::pair<std::string, std::string>& pair, std::string& outMessage, char split = '=');
     bool IsTrueString(std::string& inString);
+
+    bool Command_RemoteCmd(EventArgs& args);
     bool Command_ChessMove(EventArgs& args);
     bool Command_ChessMatch(EventArgs& args);
+    bool Command_ChessServerInfo(EventArgs& args);
+    bool Command_ChessListen(EventArgs& args);
+    bool Command_ChessConnect(EventArgs& args);
+    bool Command_ChessDisconnect(EventArgs& args);
 }

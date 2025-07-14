@@ -8,7 +8,7 @@
 #include "Game/Core/LoggerSubsystem.hpp"
 #include "Game/Core/Component/Component.hpp"
 
-RenderSubsystem::RenderSubsystem(IRenderer& renderer): m_renderer(renderer)
+RenderSubsystem::RenderSubsystem(IRenderer& renderer) : m_renderer(renderer)
 {
 }
 
@@ -37,7 +37,7 @@ void RenderSubsystem::RenderWorld(const Camera& camera, LightingConstants& light
     for (IRenderable* r : m_renderables)
     {
         // whether or not is a component
-        IComponent* comp = dynamic_cast<IComponent*>(r);
+        auto comp = dynamic_cast<IComponent*>(r);
         if (comp)
         {
             if (comp->GetEnable())

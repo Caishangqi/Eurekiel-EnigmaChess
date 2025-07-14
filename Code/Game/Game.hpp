@@ -7,10 +7,10 @@
 #include "Module/Gameplay/CameraState.h"
 #include "Module/Gameplay/GameState.hpp"
 
+class NetworkDispatcher;
 class ChessMatch;
 class Player;
 class Clock;
-class Prop;
 
 class Game
 {
@@ -39,15 +39,15 @@ public:
     void UpdateCameras(float deltaTime);
     void EnterCameraState(ECameraState state);
 
-    // Grid
-    void RenderGrids() const;
-    void RenderProps() const;
+    // Networking
+    void InitializeNetworking();
 
     /// Chess
-    ChessMatch*  match       = nullptr;
-    EGameState   gameState   = EGameState::ATTRACT;
-    ECameraState cameraState = ECameraState::PER_PLAYER;
-    ECameraMode  cameraMode  = ECameraMode::AUTO;
+    ChessMatch*        match        = nullptr;
+    NetworkDispatcher* m_dispatcher = nullptr;
+    EGameState         gameState    = EGameState::ATTRACT;
+    ECameraState       cameraState  = ECameraState::PER_PLAYER;
+    ECameraMode        cameraMode   = ECameraMode::AUTO;
 
     bool m_isInMainMenu = true;
     bool m_isGameStart  = false;
@@ -69,33 +69,10 @@ public:
     Player* m_player = nullptr;
     /// 
 
-    /// Cube
-    Prop* m_cube   = nullptr;
-    Prop* m_cube_1 = nullptr;
-    ///
-
-    /// Test Obj
-    Prop* m_testProp = nullptr;
-    /// 
-
-    /// Balls
-    Prop* m_ball = nullptr;
-    /// 
-
     /// Light Constants
     LightingConstants m_lightingConstants = {Vec3(3, 1, -2), 0.55f, 0.35f};
 
-    /// Grid
-    Prop*              m_grid_x = nullptr;
-    Prop*              m_grid_y = nullptr;
-    std::vector<Prop*> m_grid_x_unit_5;
-    std::vector<Prop*> m_grid_x_unit_1;
-    std::vector<Prop*> m_grid_y_unit_5;
-    std::vector<Prop*> m_grid_y_unit_1;
-    /// 
 
-    
-    
     /// Configs
     XmlDocument m_chessMatchConfig;
 

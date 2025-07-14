@@ -7,7 +7,7 @@
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 
-Player::Player(Game* owner): Entity(owner)
+Player::Player(Game* owner) : Entity(owner)
 {
     m_camera = owner->m_spectatorCamera;
 }

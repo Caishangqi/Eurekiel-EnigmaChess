@@ -5,7 +5,7 @@
 #include "Game/Core/Component/Component.hpp"
 Actor::ActorID Actor::s_nextID = 0;
 
-Actor::Actor(): m_id(s_nextID++)
+Actor::Actor() : m_id(s_nextID++)
 {
 }
 
@@ -28,7 +28,7 @@ void Actor::Tick(float dt)
         {
             comp->Tick(dt);
         }
-            
+
     // Tick children (depth-first)
     for (auto& child : m_children)
         child->Tick(dt);

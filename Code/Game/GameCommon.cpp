@@ -171,4 +171,3 @@ std::string Common::ToUpper(const std::string& input)
     });
     return result;
 }
-

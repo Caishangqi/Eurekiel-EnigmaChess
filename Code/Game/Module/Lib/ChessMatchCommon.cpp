@@ -1,8 +1,11 @@
 ﻿#include "ChessMatchCommon.hpp"
 
+#include <regex>
+
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Network/NetworkSubsystem.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Player.hpp"
@@ -102,7 +105,7 @@ bool ChessMatchCommon::GetAllPieces(ChessGrid& grid, std::vector<ChessPiece*>& p
     {
         for (Actor* actor : actors)
         {
-            ChessPiece* piece = dynamic_cast<ChessPiece*>(actor);
+            auto piece = dynamic_cast<ChessPiece*>(actor);
             if (piece != nullptr)
                 pieces.push_back(piece);
         }
@@ -143,7 +146,7 @@ bool ChessMatchCommon::GetChessMoveValid(MoveResult result)
         return false;
 
     case ChessMoveResult::UNKNOWN:
-        ERROR_AND_DIE(Stringf( "Unhandled ChessMoveResult enum value #%d", (int)result.m_moveResult ))
+        ERROR_AND_DIE(Stringf( "Unhandled ChessMoveResult enum value #%d", result.m_moveResult ))
     }
     return false;
 }
@@ -247,6 +250,55 @@ int ChessMatchCommon::GetCommandStringsWith(Strings& inStrings, std::string key,
 bool ChessMatchCommon::IsTrueString(std::string& inString)
 {
     return Common::ToUpper(inString) == "TRUE";
+}
+
+/**
+ * Processes a remote command that can be sent over the network and executed on a remote computer's DevConsole.
+ * Constructs a DevConsole command string based on the provided arguments, omitting the "RemoteCmd" and "cmd=" segments
+ * from the final string. Once received by the remote system, the command string will have "remote=true" appended,
+ * and then executed in the remote DevConsole system.
+ *
+ * @param args The arguments used to construct the command string. It should include the "cmd" key specifying
+ *             the command name, and optionally additional key-value pairs for command parameters.
+ * @return Returns true if the command was successfully processed and sent. Returns false if the command processing failed.
+ */
+bool ChessMatchCommon::Command_RemoteCmd(EventArgs& args)
+{
+    std::pair<std::string, std::string> cmd;
+    std::string                         outMessage;
+    GetCommandArgsWith(args, "cmd", cmd, outMessage);
+
+    if (cmd.second.empty() || cmd.first.empty())
+    {
+        g_theDevConsole->AddLine(DevConsole::COLOR_ERROR,
+                                 "Fail to send remote command, invalid arguments");
+        return false;
+    }
+
+    std::string arg = args.GetValue("args", std::string(""));
+    std::regex  re("cmd=", std::regex_constants::icase);
+    arg = std::regex_replace(arg, re, "");
+
+    // 使用新的字符串发送 API（自动处理消息边界）
+    if (g_theNetworkSubsystem->GetClientState() == ClientState::CONNECTED)
+    {
+        g_theNetworkSubsystem->SendStringToServer(arg);
+        g_theDevConsole->AddLine(DevConsole::COLOR_INFO_LOG,
+                                 "Command sent to server: " + arg);
+        return true;
+    }
+
+    if (g_theNetworkSubsystem->GetServerState() == ServerState::LISTENING)
+    {
+        g_theNetworkSubsystem->BroadcastStringToClients(arg);
+        g_theDevConsole->AddLine(DevConsole::COLOR_INFO_LOG,
+                                 "Command broadcasted to clients: " + arg);
+        return true;
+    }
+
+    g_theDevConsole->AddLine(DevConsole::COLOR_ERROR,
+                             "Not connected to send command");
+    return false;
 }
 
 
@@ -358,7 +410,7 @@ bool ChessMatchCommon::Command_ChessMove(EventArgs& args)
         g_theGame->match->ExecuteChessTeleport(GetGridPosition(from[1]), GetGridPosition(to[1]), from[1], to[1], addArgs);
         return true;
     }
-    else if (teleportArgResult != -1 && !validTrueString)
+    if (teleportArgResult != -1 && !validTrueString)
     {
         g_theDevConsole->AddLine(DevConsole::COLOR_WARNING, "If you want to enable Chess teleport, you should use teleport=true");
         return false;
@@ -382,4 +434,167 @@ bool ChessMatchCommon::Command_ChessMatch(EventArgs& args)
         }
     }
     return true;
+}
+
+/**
+ * Modifies or retrieves the server configuration information (IP address and port) for the Chess network system.
+ * If no specific arguments are provided, it displays the current server configuration.
+ * If a new IP or port is provided and the client is not connected, the server configuration will be updated.
+ * Provides error feedback if a connected client attempts to modify the server configuration.
+ *
+ * @param args The event arguments containing the keys "ip" and/or "port" along with their values.
+ *             If "ip" or "port" is not provided or empty, the function simply retrieves the current server info.
+ * @return Returns true if operation was successful such as displaying the server information or updating the server config.
+ *         Returns false if the operation failed, such as attempting to set configuration while connected to a server.
+ */
+bool ChessMatchCommon::Command_ChessServerInfo(EventArgs& args)
+{
+    std::string                         outMessage;
+    std::pair<std::string, std::string> ip;
+    std::pair<std::string, std::string> port;
+    GetCommandArgsWith(args, "ip", ip, outMessage);
+    GetCommandArgsWith(args, "port", port, outMessage);
+
+    if (ip.second.empty() && port.second.empty())
+    {
+        // 显示所有信息，包括网络模式
+        NetworkStats stats = g_theNetworkSubsystem->GetNetworkStatistics();
+
+        auto sendModeStr = "";
+        switch (stats.currentSendMode)
+        {
+        case SendMode::BLOCKING: sendModeStr = "BLOCKING";
+            break;
+        case SendMode::NON_BLOCKING: sendModeStr = "NON_BLOCKING";
+            break;
+        case SendMode::ADAPTIVE: sendModeStr = "ADAPTIVE";
+            break;
+        }
+
+        g_theDevConsole->AddLine(DevConsole::COLOR_INFO_MINOR,
+                                 Stringf("Server Info:\n"
+                                         "  IP: %s, Port: %d\n"
+                                         "  Send Mode: %s\n"
+                                         "  Queue Size: %zu bytes\n"
+                                         "  Connections: %zu\n"
+                                         "  Performance Limited: %s",
+                                         g_theNetworkSubsystem->GetConfig().serverIp.c_str(),
+                                         g_theNetworkSubsystem->GetConfig().serverPort,
+                                         sendModeStr,
+                                         stats.outgoingQueueSize,
+                                         stats.activeConnections,
+                                         stats.isNetworkLimited ? "YES" : "NO"));
+        return true;
+    }
+
+    // 现有的设置IP/端口逻辑保持不变
+    if (g_theNetworkSubsystem)
+    {
+        if (g_theNetworkSubsystem->GetClientState() == ClientState::CONNECTED)
+        {
+            g_theDevConsole->AddLine(DevConsole::COLOR_ERROR,
+                                     "You can not set Server Info when connected to a server");
+            return false;
+        }
+        if (!ip.second.empty())
+            g_theNetworkSubsystem->GetConfig().serverIp = ip.second;
+        if (!port.second.empty())
+            g_theNetworkSubsystem->GetConfig().serverPort = static_cast<uint16_t>(atoi(port.second.c_str()));
+
+        g_theDevConsole->AddLine(Rgba8::DEBUG_GREEN,
+                                 Stringf("Set Server Config to: IP=%s, Port=%d",
+                                         g_theNetworkSubsystem->GetConfig().serverIp.c_str(),
+                                         g_theNetworkSubsystem->GetConfig().serverPort));
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Starts a server for the Chess network system and initializes a listen socket on a specified port.
+ * If no port is provided in the arguments, the system uses a default port of 3100 or a previously overridden port.
+ *
+ * @param args The event arguments containing the "port" key and its corresponding value. If "port" is not provided or empty, the function uses the default or previously specified port.
+ * @return Returns true if the server and listen socket were successfully started.
+ *         Returns false if the operation failed.
+ */
+bool ChessMatchCommon::Command_ChessListen(EventArgs& args)
+{
+    std::string                         outMessage;
+    std::pair<std::string, std::string> port;
+    GetCommandArgsWith(args, "port", port, outMessage);
+    if (g_theNetworkSubsystem->GetServerState() != ServerState::IDLE)
+    {
+        outMessage = Stringf("Fail to Listen, Server is already running or not initialized");
+        g_theDevConsole->AddLine(DevConsole::COLOR_ERROR, outMessage);
+        return false;
+    }
+
+    if (port.second.empty())
+    {
+        bool result = g_theNetworkSubsystem->StartServer(g_theNetworkSubsystem->GetConfig().serverPort); // Default config
+        if (result)
+        {
+            outMessage = Stringf("Start Server with ip = %s, port = %d", g_theNetworkSubsystem->GetConfig().serverIp.c_str(), g_theNetworkSubsystem->GetConfig().serverPort);
+            g_theDevConsole->AddLine(Rgba8::DEBUG_GREEN, outMessage);
+            return result;
+        }
+        outMessage = Stringf("Fail to start Server with ip = %s, port = %d", g_theNetworkSubsystem->GetConfig().serverIp.c_str(), g_theNetworkSubsystem->GetConfig().serverPort);
+        g_theDevConsole->AddLine(DevConsole::COLOR_ERROR, outMessage);
+        return result;
+    }
+    return false;
+}
+
+/**
+ * Establishes a connection to a remote chess server using the specified IP address and port.
+ * If arguments for IP or port are omitted, default values are used: IP=127.0.0.1 and port=3100.
+ * The command uses existing, overridden, or default values as appropriate. If both IP and port are provided,
+ * it attempts to connect using the specified values. If only IP is provided, the default port or previous configuration is used.
+ *
+ * @param args The event arguments that may include "ip" (string, optional) and "port" (integer, optional).
+ *             - "ip": The IP address to connect to. Defaults to 127.0.0.1 if not provided.
+ *             - "port": The port number for the connection. Defaults to 3100 if not provided.
+ * @return Returns true if the connection to the server was successfully established.
+ *         Returns false if the connection attempt fails.
+ */
+bool ChessMatchCommon::Command_ChessConnect(EventArgs& args)
+{
+    std::string                         outMessage;
+    std::pair<std::string, std::string> ip;
+    std::pair<std::string, std::string> port;
+    GetCommandArgsWith(args, "ip", ip, outMessage);
+    GetCommandArgsWith(args, "port", port, outMessage);
+
+    if (g_theNetworkSubsystem->GetClientState() != ClientState::IDLE)
+    {
+        outMessage = Stringf("Fail to Connect, Client is already running or not initialized");
+        g_theDevConsole->AddLine(DevConsole::COLOR_ERROR, outMessage);
+        return false;
+    }
+
+    ip.second   = ip.second.empty() ? "127.0.0.1" : ip.second;
+    port.second = port.second.empty() ? "3100" : port.second;
+
+    if (g_theNetworkSubsystem)
+    {
+        bool result = g_theNetworkSubsystem->StartClient(ip.second, static_cast<uint16_t>(atoi(port.second.c_str())));
+        if (result)
+        {
+            outMessage = Stringf("Connecting to Server with ip = %s, port = %d", ip.second.c_str(), atoi(port.second.c_str()));
+            g_theDevConsole->AddLine(Rgba8::DEBUG_GREEN, outMessage);
+            return result;
+        }
+        outMessage = Stringf("Fail to connect to Server with ip = %s, port = %d", ip.second.c_str(), atoi(port.second.c_str()));
+        g_theDevConsole->AddLine(DevConsole::COLOR_ERROR, outMessage);
+        return result;
+    }
+    return false;
+}
+
+bool ChessMatchCommon::Command_ChessDisconnect(EventArgs& args)
+{
+    UNUSED(args)
+    return false;
 }

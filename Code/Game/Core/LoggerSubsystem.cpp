@@ -5,7 +5,7 @@
 #include "Game/GameCommon.hpp"
 
 
-LoggerSubsystem::LoggerSubsystem(LoggerConfig& config): m_config(config)
+LoggerSubsystem::LoggerSubsystem(LoggerConfig& config) : m_config(config)
 {
 }
 

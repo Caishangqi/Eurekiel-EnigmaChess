@@ -52,7 +52,7 @@ IComponent* CollisionComponent::FromXML(const XmlElement& xmlElement)
 
 XmlElement* CollisionComponent::ToXML() const
 {
-    return NULL;
+    return nullptr;
 }
 
 void CollisionComponent::Render(const RenderContext& ctx)

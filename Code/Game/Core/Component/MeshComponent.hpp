@@ -66,7 +66,7 @@ private:
 
     FMesh m_mesh;
 
-    
+
     // FMeshes meshes; Consider Packed add vertex data into the struct
     // MeshComponent hold only FMeshes not bunch of vertex data
 };

@@ -21,16 +21,18 @@ class Game;
 class RenderSubsystem;
 class LoggerSubsystem;
 class WidgetSubsystem;
+class NetworkSubsystem;
 
 extern RandomNumberGenerator* g_rng;
 extern App*                   g_theApp;
-extern IRenderer*              g_theRenderer;
+extern IRenderer*             g_theRenderer;
 extern InputSystem*           g_theInput;
 extern AudioSystem*           g_theAudio;
 extern Game*                  g_theGame;
 extern RenderSubsystem*       g_theRenderSubsystem;
 extern LoggerSubsystem*       g_theLoggerSubsystem;
 extern WidgetSubsystem*       g_theWidgetSubsystem;
+extern NetworkSubsystem*      g_theNetworkSubsystem;
 
 constexpr float WORLD_SIZE_X   = 200.f;
 constexpr float WORLD_SIZE_Y   = 100.f;

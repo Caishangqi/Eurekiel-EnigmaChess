@@ -21,7 +21,7 @@ void BakeModelChessBoard::Build()
     constexpr float tileSize     = 1.0f;
     constexpr float marginSize   = tileSize / 3.0f;
     constexpr float boardZTop    = 0.0f;
-    const float     boardZBottom = -marginSize;
+    constexpr float boardZBottom = -marginSize;
     AABB2           uv           = AABB2::ZERO_TO_ONE;
 
     const Rgba8 lightColor(200, 200, 200);
