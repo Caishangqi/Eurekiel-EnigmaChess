@@ -513,7 +513,7 @@ bool ChessMatchCommon::Command_ChessBegin(EventArgs& args)
             }
         }
     }
-
+    
     // Set the starting player
     match->m_currentPlayerIndex = startingPlayerIndex;
 
@@ -798,8 +798,8 @@ std::string ChessMatchCommon::GridPosToChessNotation(const IntVec2& pos)
     if (pos.x < 0 || pos.x > 7 || pos.y < 0 || pos.y > 7)
         return "INVALID";
 
-    char file = 'a' + pos.x; // a-h
-    char rank = '1' + pos.y; // 1-8
+    char file = 'a' + (char)pos.x; // a-h
+    char rank = '1' + (char)pos.y; // 1-8
     return std::string(1, file) + std::string(1, rank);
 }
 
@@ -1154,7 +1154,7 @@ bool ChessMatchCommon::SendRemoteCommand(const std::string& command)
 
     //Construct RemoteCmd command string
     std::string remoteCmdString = Stringf("RemoteCmd cmd=%s", command.c_str());
-    
+
     g_theDevConsole->Execute(remoteCmdString);
 
     g_theDevConsole->AddLine(DevConsole::COLOR_INFO_LOG,
