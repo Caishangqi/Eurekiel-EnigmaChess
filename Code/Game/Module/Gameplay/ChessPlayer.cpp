@@ -5,7 +5,7 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Renderer/Camera.hpp"
-#include "Engine/Renderer/DebugRenderSystem.h"
+#include "Engine/Renderer/DebugRenderSystem.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Core/LoggerSubsystem.hpp"

@@ -8,7 +8,7 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Math/EulerAngles.hpp"
 #include "Engine/Math/IntVec2.hpp"
-#include "Engine/Renderer/DebugRenderSystem.h"
+#include "Engine/Renderer/DebugRenderSystem.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Player.hpp"

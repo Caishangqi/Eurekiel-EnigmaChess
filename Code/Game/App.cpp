@@ -15,7 +15,7 @@
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Network/NetworkSubsystem.hpp"
 #include "Engine/Renderer/Camera.hpp"
-#include "Engine/Renderer/DebugRenderSystem.h"
+#include "Engine/Renderer/DebugRenderSystem.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 
 Window*                g_theWindow           = nullptr;
