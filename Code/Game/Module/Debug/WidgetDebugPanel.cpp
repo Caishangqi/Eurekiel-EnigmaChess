@@ -4,7 +4,7 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/LineSegment2.hpp"
-#include "Engine/Renderer/DebugRenderSystem.h"
+#include "Engine/Renderer/DebugRenderSystem.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Module/Definition/ChessPieceDefinition.hpp"

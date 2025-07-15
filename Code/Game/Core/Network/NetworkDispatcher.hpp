@@ -12,7 +12,6 @@ public:
 
     bool ExecuteRemoteCmd();
 
-    // 便利方法
     bool   IsConnectedAsClient() const;
     bool   IsRunningAsServer() const;
     size_t GetConnectedClientCount() const;
@@ -20,20 +19,20 @@ public:
 private:
     NetworkSubsystem* m_networkSubsystem = nullptr;
 
-    // 消息缓冲：存储不完整的消息
-    std::string              m_serverMessageBuffer; // 从服务端接收的不完整消息
-    std::vector<std::string> m_clientMessageBuffers; // 从各个客户端接收的不完整消息
+    // Message buffer: store incomplete messages
+    std::string              m_serverMessageBuffer; // Incomplete message received from the server
+    std::vector<std::string> m_clientMessageBuffers; // Incomplete messages received from various clients
 
-    // 消息处理
+    // Message processing
     bool ProcessServerMessages();
     bool ProcessClientMessages();
 
-    // 消息边界处理
+    // Message boundary processing
     std::vector<std::string> ExtractCompleteMessages(std::string& buffer, const std::vector<uint8_t>& newData);
-    std::vector<std::string> ExtractRawMessages(const std::vector<uint8_t>& data); // 用于RAW_BYTES模式
+    std::vector<std::string> ExtractRawMessages(const std::vector<uint8_t>& data); // for RAW_BYTES mode
 
     void ExecuteCommand(const std::string& command);
 
-    // 根据当前边界模式选择处理方式
+    // Select the processing method according to the current boundary mode
     std::vector<std::string> ProcessMessageData(std::string& buffer, const std::vector<uint8_t>& newData);
 };

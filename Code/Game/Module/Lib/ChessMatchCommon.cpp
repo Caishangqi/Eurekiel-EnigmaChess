@@ -279,7 +279,6 @@ bool ChessMatchCommon::Command_RemoteCmd(EventArgs& args)
     std::regex  re("cmd=", std::regex_constants::icase);
     arg = std::regex_replace(arg, re, "");
 
-    // 使用新的字符串发送 API（自动处理消息边界）
     if (g_theNetworkSubsystem->GetClientState() == ClientState::CONNECTED)
     {
         g_theNetworkSubsystem->SendStringToServer(arg);
@@ -318,7 +317,6 @@ bool ChessMatchCommon::Command_ChessPlayerInfo(EventArgs& args)
     std::pair<std::string, std::string> name;
     std::pair<std::string, std::string> remote;
 
-    // 解析命令参数
     GetCommandArgsWith(args, "name", name, outMessage);
     GetCommandArgsWith(args, "remote", remote, outMessage);
 
@@ -329,7 +327,7 @@ bool ChessMatchCommon::Command_ChessPlayerInfo(EventArgs& args)
         return false;
     }
 
-    // 检查是否是远程命令
+    // Check if it is a remote command
     bool isRemote = !remote.second.empty() && IsTrueString(remote.second);
 
     if (!g_theGame || !g_theGame->match)
@@ -342,13 +340,13 @@ bool ChessMatchCommon::Command_ChessPlayerInfo(EventArgs& args)
 
     if (isRemote)
     {
-        // 远程命令：设置对手的名字
+        // Remote command: set the opponent's name
         if (match->m_players.size() >= 2)
         {
             int          localFactionId = g_theGame->m_localPlayerFactionId;
             ChessPlayer* opponentPlayer = nullptr;
 
-            // 找到不是本地玩家的另一个玩家
+            // Find another player who is not the local player
             for (ChessPlayer* player : match->m_players)
             {
                 if (player && player->m_faction.m_id != localFactionId)
@@ -365,7 +363,7 @@ bool ChessMatchCommon::Command_ChessPlayerInfo(EventArgs& args)
                                      name.second.c_str(), opponentPlayer->m_faction.m_id);
                 g_theDevConsole->AddLine(Rgba8::DEBUG_GREEN, outMessage);
 
-                // 更新对应的faction
+                // Update the corresponding faction
                 for (auto& faction : match->m_factions)
                 {
                     if (faction.m_id == opponentPlayer->m_faction.m_id)
@@ -388,7 +386,7 @@ bool ChessMatchCommon::Command_ChessPlayerInfo(EventArgs& args)
     }
     else
     {
-        // 本地命令：设置自己的名字并通过RemoteCmd发送给远程
+        // Local command: set your own name and send it to the remote via RemoteCmd
         if (!match->m_players.empty())
         {
             int          localFactionId = g_theGame->m_localPlayerFactionId;
@@ -410,7 +408,7 @@ bool ChessMatchCommon::Command_ChessPlayerInfo(EventArgs& args)
                                      name.second.c_str(), localPlayer->m_faction.m_id);
                 g_theDevConsole->AddLine(Rgba8::DEBUG_GREEN, outMessage);
 
-                // 更新对应的faction
+                // Update the corresponding faction
                 for (auto& faction : match->m_factions)
                 {
                     if (faction.m_id == localPlayer->m_faction.m_id)
@@ -420,7 +418,6 @@ bool ChessMatchCommon::Command_ChessPlayerInfo(EventArgs& args)
                     }
                 }
 
-                // ✅ 使用RemoteCmd系统发送给远程
                 std::string remoteCommand = Stringf("ChessPlayerInfo name=%s", name.second.c_str());
                 SendRemoteCommand(remoteCommand);
             }
@@ -450,7 +447,6 @@ bool ChessMatchCommon::Command_ChessBegin(EventArgs& args)
     std::pair<std::string, std::string> firstPlayer;
     std::pair<std::string, std::string> remote;
 
-    // 解析命令参数
     GetCommandArgsWith(args, "firstPlayer", firstPlayer, outMessage);
     GetCommandArgsWith(args, "remote", remote, outMessage);
 
@@ -464,7 +460,7 @@ bool ChessMatchCommon::Command_ChessBegin(EventArgs& args)
 
     ChessMatch* match = g_theGame->match;
 
-    // 检查是否有足够的玩家
+    // Check if there are enough players
     if (match->m_players.size() < 2)
     {
         g_theDevConsole->AddLine(DevConsole::COLOR_WARNING,
@@ -472,22 +468,23 @@ bool ChessMatchCommon::Command_ChessBegin(EventArgs& args)
         return false;
     }
 
-    // 重置游戏状态
+    // Reset the game state
     match->m_turnCounter = 0;
 
-    // 确定首发玩家
+    // Determine the starting player
     std::string firstPlayerName     = firstPlayer.second;
     int         startingPlayerIndex = 0;
 
     if (!firstPlayerName.empty())
     {
-        // 查找指定的首发玩家（支持大小写不敏感匹配）
+        // Find the specified starting player (supports case-insensitive matching)
+
         bool found = false;
         for (int i = 0; i < static_cast<int>(match->m_players.size()); i++)
         {
             std::string playerName = match->m_players[i]->m_faction.m_displayName;
 
-            // 大小写不敏感比较
+            // Case-insensitive comparison
             if (Common::ToUpper(playerName) == Common::ToUpper(firstPlayerName))
             {
                 startingPlayerIndex = i;
@@ -504,7 +501,7 @@ bool ChessMatchCommon::Command_ChessBegin(EventArgs& args)
     }
     else if (!isRemote)
     {
-        // 如果是本地命令且没有指定首发玩家，使用本地玩家
+        // If this is a local command and no starting player is specified, use the local player
         int localFactionId = g_theGame->m_localPlayerFactionId;
         for (int i = 0; i < static_cast<int>(match->m_players.size()); i++)
         {
@@ -517,22 +514,15 @@ bool ChessMatchCommon::Command_ChessBegin(EventArgs& args)
         }
     }
 
-    // 设置首发玩家
+    // Set the starting player
     match->m_currentPlayerIndex = startingPlayerIndex;
 
-    // 重置棋盘
-    //g_theGame->ChessMatchReset();
-
-    // 输出游戏开始信息
     outMessage = Stringf("Chess game started! First player: %s (Faction ID: %d)",
                          match->GetCurrentTurnPlayer()->m_faction.m_displayName.c_str(),
                          match->GetCurrentTurnPlayer()->m_faction.m_id);
     g_theDevConsole->AddLine(Rgba8::DEBUG_GREEN, outMessage);
 
-    // 更新游戏状态
-    //g_theGame->EnterState(EGameState::MATCH);
-
-    // 如果是本地命令，通过RemoteCmd发送给远程
+    // If it is a local command, send it to the remote via RemoteCmd
     if (!isRemote)
     {
         std::string remoteCommand;
@@ -729,23 +719,22 @@ bool ChessMatchCommon::IsLocalPlayerTurn(ChessPlayer* currentPlayer)
     if (!currentPlayer || !g_theGame || !g_theGame->match)
         return false;
 
-    // 在单人模式下，总是允许本地操作
+    // In single-player mode, always allow local operations
     if (g_theGame->GetGameMode() == EGameMode::SINGLE_PLAYER)
     {
         return true;
     }
 
-    // 在多人模式下，检查当前玩家是否是本地玩家
+    // In multiplayer mode, check if the current player is a local player
     if (g_theGame->GetGameMode() == EGameMode::MULTIPLAYER_HOST ||
         g_theGame->GetGameMode() == EGameMode::MULTIPLAYER_CLIENT)
     {
-        // 使用存储的本地玩家阵营ID来判断
+        // Use the stored local player faction ID to determine
         int localFactionId   = g_theGame->m_localPlayerFactionId;
         int currentFactionId = currentPlayer->m_faction.m_id;
 
         bool isLocalTurn = (currentFactionId == localFactionId);
 
-        // 调试信息（可选，便于调试）
         /*
         g_theDevConsole->AddLine(DevConsole::COLOR_INFO_MINOR, 
                                Stringf("Turn check: Current=%d, Local=%d, IsLocalTurn=%s", 
@@ -756,13 +745,13 @@ bool ChessMatchCommon::IsLocalPlayerTurn(ChessPlayer* currentPlayer)
         return isLocalTurn;
     }
 
-    // 观战模式：不允许任何移动
+    // Spectator mode: no movement allowed
     if (g_theGame->GetGameMode() == EGameMode::SPECTATOR)
     {
         return false;
     }
 
-    // 默认情况：不允许移动
+    // Default: No movement allowed
     return false;
 }
 
@@ -851,7 +840,7 @@ bool ChessMatchCommon::Command_ChessServerInfo(EventArgs& args)
 
     if (ip.second.empty() && port.second.empty())
     {
-        // 显示所有信息，包括网络模式
+        // Display all information, including network mode
         NetworkStats stats = g_theNetworkSubsystem->GetNetworkStatistics();
 
         auto sendModeStr = "";
@@ -881,7 +870,7 @@ bool ChessMatchCommon::Command_ChessServerInfo(EventArgs& args)
         return true;
     }
 
-    // 现有的设置IP/端口逻辑保持不变
+    // The existing logic of setting IP/port remains unchanged
     if (g_theNetworkSubsystem)
     {
         if (g_theNetworkSubsystem->GetClientState() == ClientState::CONNECTED)
@@ -930,14 +919,14 @@ bool ChessMatchCommon::Command_ChessListen(EventArgs& args)
 
     if (port.second.empty())
     {
-        // 使用默认配置启动服务器
+        // Start the server with the default configuration
         result = g_theNetworkSubsystem->StartServer(g_theNetworkSubsystem->GetConfig().serverPort);
 
         if (result)
         {
-            // 服务器启动成功 - 设置为多人主机模式
+            // Server started successfully - set to multiplayer host mode
             g_theGame->SetGameMode(EGameMode::MULTIPLAYER_HOST);
-            g_theGame->m_localPlayerFactionId = 0; // 主机通常是第一个玩家（阵营0）
+            g_theGame->m_localPlayerFactionId = 0; // The host is usually the first player (faction 0)
 
             outMessage = Stringf("Server started successfully! IP=%s, Port=%d, Mode=MULTIPLAYER_HOST",
                                  g_theNetworkSubsystem->GetConfig().serverIp.c_str(),
@@ -957,15 +946,15 @@ bool ChessMatchCommon::Command_ChessListen(EventArgs& args)
     }
     else
     {
-        // 使用指定端口启动服务器
+        // Start the server using the specified port
         uint16_t portNumber = static_cast<uint16_t>(atoi(port.second.c_str()));
         result              = g_theNetworkSubsystem->StartServer(portNumber);
 
         if (result)
         {
-            // 服务器启动成功 - 设置为多人主机模式
+            // Server started successfully - set to multiplayer host mode
             g_theGame->SetGameMode(EGameMode::MULTIPLAYER_HOST);
-            g_theGame->m_localPlayerFactionId = 0; // 主机通常是第一个玩家（阵营0）
+            g_theGame->m_localPlayerFactionId = 0; // The host is usually the first player (faction 0)
 
             outMessage = Stringf("Server started successfully! IP=%s, Port=%d, Mode=MULTIPLAYER_HOST",
                                  g_theNetworkSubsystem->GetConfig().serverIp.c_str(),
@@ -1014,7 +1003,7 @@ bool ChessMatchCommon::Command_ChessConnect(EventArgs& args)
         return false;
     }
 
-    // 使用默认值或提供的值
+    // Use default or provided value
     ip.second   = ip.second.empty() ? "127.0.0.1" : ip.second;
     port.second = port.second.empty() ? "3100" : port.second;
 
@@ -1024,9 +1013,9 @@ bool ChessMatchCommon::Command_ChessConnect(EventArgs& args)
 
         if (result)
         {
-            // 客户端连接成功 - 设置为多人客户端模式
+            // Client connected successfully - set to multiplayer client mode
             g_theGame->SetGameMode(EGameMode::MULTIPLAYER_CLIENT);
-            g_theGame->m_localPlayerFactionId = 1; // 客户端通常是第二个玩家（阵营1）
+            g_theGame->m_localPlayerFactionId = 1; // The client is usually the second player (camp 1)
 
             outMessage = Stringf("Connected to server successfully! IP=%s, Port=%d, Mode=MULTIPLAYER_CLIENT",
                                  ip.second.c_str(), atoi(port.second.c_str()));
@@ -1062,14 +1051,14 @@ bool ChessMatchCommon::Command_ChessDisconnect(EventArgs& args)
     std::pair<std::string, std::string> reason;
     std::pair<std::string, std::string> remote;
 
-    // 解析命令参数
+    // Parse command parameters
     GetCommandArgsWith(args, "reason", reason, outMessage);
     GetCommandArgsWith(args, "remote", remote, outMessage);
 
     bool        isRemote         = !remote.second.empty() && IsTrueString(remote.second);
     std::string disconnectReason = reason.second.empty() ? "No reason given" : reason.second;
 
-    // 检查网络连接状态
+    // Check network connection status
     bool isConnectedAsClient = (g_theNetworkSubsystem->GetClientState() == ClientState::CONNECTED);
     bool isRunningAsServer   = (g_theNetworkSubsystem->GetServerState() == ServerState::LISTENING);
 
@@ -1081,11 +1070,11 @@ bool ChessMatchCommon::Command_ChessDisconnect(EventArgs& args)
 
     if (isRemote)
     {
-        // 远程命令：对方要求断开连接
+        // Remote command: The other party requests to disconnect
         outMessage = Stringf("Remote disconnection request received. Reason: %s", disconnectReason.c_str());
         g_theDevConsole->AddLine(Rgba8::YELLOW, outMessage);
 
-        // 直接断开连接
+        // Disconnect directly
         if (isConnectedAsClient)
         {
             g_theNetworkSubsystem->DisconnectClient();
@@ -1097,14 +1086,14 @@ bool ChessMatchCommon::Command_ChessDisconnect(EventArgs& args)
             g_theDevConsole->AddLine(DevConsole::COLOR_INFO_LOG, "Server stopped");
         }
 
-        // 重置GameMode
+        // Reset GameMode
         g_theGame->SetGameMode(EGameMode::SINGLE_PLAYER);
         g_theGame->m_localPlayerFactionId = 0;
         g_theDevConsole->AddLine(DevConsole::COLOR_INFO_LOG, "Game mode reset to SINGLE_PLAYER");
     }
     else
     {
-        // 本地命令：通过RemoteCmd先发送断开消息
+        // Local command: send a disconnect message via RemoteCmd first
         outMessage = Stringf("Disconnecting... Reason: %s", disconnectReason.c_str());
         g_theDevConsole->AddLine(Rgba8::YELLOW, outMessage);
 
@@ -1127,7 +1116,7 @@ bool ChessMatchCommon::Command_ChessDisconnect(EventArgs& args)
 
         SendRemoteCommand(remoteCommand);
 
-        // 然后断开连接
+        // Then disconnect
         if (isConnectedAsClient)
         {
             g_theNetworkSubsystem->DisconnectClient();
@@ -1139,7 +1128,7 @@ bool ChessMatchCommon::Command_ChessDisconnect(EventArgs& args)
             g_theDevConsole->AddLine(DevConsole::COLOR_INFO_LOG, "Server stopped");
         }
 
-        // 重置GameMode
+        // Reset GameMode
         g_theGame->SetGameMode(EGameMode::SINGLE_PLAYER);
         g_theGame->m_localPlayerFactionId = 0;
         g_theDevConsole->AddLine(DevConsole::COLOR_INFO_LOG, "Game mode reset to SINGLE_PLAYER");
@@ -1153,7 +1142,7 @@ bool ChessMatchCommon::SendRemoteCommand(const std::string& command)
     if (!g_theNetworkSubsystem)
         return false;
 
-    // 检查网络连接状态
+    // Check network connection status
     bool isConnectedAsClient = (g_theNetworkSubsystem->GetClientState() == ClientState::CONNECTED);
     bool isRunningAsServer   = (g_theNetworkSubsystem->GetServerState() == ServerState::LISTENING);
 
@@ -1163,10 +1152,9 @@ bool ChessMatchCommon::SendRemoteCommand(const std::string& command)
         return false;
     }
 
-    // 构造RemoteCmd命令字符串
+    //Construct RemoteCmd command string
     std::string remoteCmdString = Stringf("RemoteCmd cmd=%s", command.c_str());
-
-    // 使用DevConsole执行RemoteCmd，这会调用Command_RemoteCmd函数
+    
     g_theDevConsole->Execute(remoteCmdString);
 
     g_theDevConsole->AddLine(DevConsole::COLOR_INFO_LOG,
