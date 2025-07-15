@@ -10,6 +10,7 @@
 #include "Game/GameCommon.hpp"
 #include "Game/Core/LoggerSubsystem.hpp"
 #include "Game/Core/Network/NetworkDispatcher.hpp"
+using namespace ChessMatchCommon;
 
 ChessPlayer::ChessPlayer(ChessMatch* match) : m_match(match)
 {
@@ -35,6 +36,7 @@ void ChessPlayer::OnTick(float deltaTime)
 
 
     if (m_match->m_currentPlayerIndex != m_faction.m_id) return; // not our turn, do not tick
+    if (IsMultiplayerMode() && !IsLocalPlayerTurn(this))return; // If we in multiplayer mode but we are not current turn, we do not tick
 
     /// Reset
     m_match->m_highLightedSquare = IntVec2::INVALID;
@@ -124,7 +126,6 @@ void ChessPlayer::HandlePlayerClickSelect()
 
 void ChessPlayer::HandlePlayerClickMove()
 {
-    using namespace ChessMatchCommon;
     if (!m_match->m_selectedPiece) return;
 
     if (m_hitPiece && m_hitPiece->m_faction != m_faction.m_id)
