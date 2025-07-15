@@ -157,4 +157,5 @@ namespace ChessMatchCommon
     bool        IsLocalPlayerTurn(ChessPlayer* currentPlayer);
     std::string GetGameModeString();
     IntVec2     StringToGridPos(const std::string& notation);
+    std::string GridPosToChessNotation(const IntVec2& pos);
 }

@@ -795,13 +795,23 @@ IntVec2 ChessMatchCommon::StringToGridPos(const std::string& notation)
     char file = notation[0]; // a-h
     char rank = notation[1]; // 1-8
 
-    if (file < 'a' || file > 'h' || rank < '1' || rank > '8')
+    if (file < 'A' || file > 'H' || rank < '1' || rank > '8')
         return IntVec2::INVALID;
 
-    int x = file - 'a'; // 0-7
+    int x = file - 'A'; // 0-7
     int y = rank - '1'; // 0-7
 
     return IntVec2(x, y);
+}
+
+std::string ChessMatchCommon::GridPosToChessNotation(const IntVec2& pos)
+{
+    if (pos.x < 0 || pos.x > 7 || pos.y < 0 || pos.y > 7)
+        return "INVALID";
+
+    char file = 'a' + pos.x; // a-h
+    char rank = '1' + pos.y; // 1-8
+    return std::string(1, file) + std::string(1, rank);
 }
 
 bool ChessMatchCommon::Command_ChessMatch(EventArgs& args)
