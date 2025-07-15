@@ -11,6 +11,7 @@
 #include "Engine/Math/Mat44.hpp"
 #include "Engine/Math/Vec3.hpp"
 
+class ChessPlayer;
 class ChessObject;
 class ChessPiece;
 enum class ECameraState;
@@ -23,6 +24,14 @@ using ChessGrid = std::vector<Actor*>[8];
 
 namespace ChessMatchCommon
 {
+    enum class EGameMode
+    {
+        SINGLE_PLAYER, // 单人模式（本地AI或练习模式）
+        MULTIPLAYER_HOST, // 多人模式 - 作为主机
+        MULTIPLAYER_CLIENT, // 多人模式 - 作为客户端
+        SPECTATOR // 观战模式
+    };
+
     enum class ChessMoveResult
     {
         VALID_MOVE_NORMAL,
@@ -133,10 +142,19 @@ namespace ChessMatchCommon
     bool IsTrueString(std::string& inString);
 
     bool Command_RemoteCmd(EventArgs& args);
+    bool Command_ChessPlayerInfo(EventArgs& args);
+    bool Command_ChessBegin(EventArgs& args);
     bool Command_ChessMove(EventArgs& args);
     bool Command_ChessMatch(EventArgs& args);
     bool Command_ChessServerInfo(EventArgs& args);
     bool Command_ChessListen(EventArgs& args);
     bool Command_ChessConnect(EventArgs& args);
     bool Command_ChessDisconnect(EventArgs& args);
+
+    [[maybe_unused]] bool SendRemoteCommand(const std::string& command);
+
+    bool        IsMultiplayerMode();
+    bool        IsLocalPlayerTurn(ChessPlayer* currentPlayer);
+    std::string GetGameModeString();
+    IntVec2     StringToGridPos(const std::string& notation);
 }
