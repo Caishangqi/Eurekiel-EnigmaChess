@@ -9,6 +9,7 @@
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Core/LoggerSubsystem.hpp"
+#include "Game/Core/Network/NetworkDispatcher.hpp"
 
 ChessPlayer::ChessPlayer(ChessMatch* match) : m_match(match)
 {
@@ -161,9 +162,22 @@ void ChessPlayer::HandlePlayerClickMove()
         m_match->m_selectedPiece = nullptr;
         Strings meta;
         if (m_bEnableTeleportCheat)
-            m_match->ExecuteChessTeleport(mover->m_gridCurrentPosition, impactPos, "INVALID", "INVALID", meta);
+        {
+            if (ChessMatchCommon::IsMultiplayerMode() && ChessMatchCommon::IsLocalPlayerTurn(this))
+            {
+                g_theDevConsole->AddLine(DevConsole::COLOR_INFO_MAJOR, Stringf("Teleporting is disabled in Multiple Mode"));
+            }
+            else
+            {
+                m_match->ExecuteChessTeleport(mover->m_gridCurrentPosition, impactPos, "INVALID", "INVALID", meta);
+            }
+        }
         else
+        {
             m_match->ExecuteChessMove(mover->m_gridCurrentPosition, impactPos, "INVALID", "INVALID", meta);
+            if (ChessMatchCommon::IsMultiplayerMode() && ChessMatchCommon::IsLocalPlayerTurn(this))
+                SendRemoteCommand(Stringf("ChessMove from=%s to=%s", GridPosToChessNotation(res.m_fromPosition).c_str(), GridPosToChessNotation(res.m_toPosition).c_str()));
+        }
         mover->SetEnableHighlight(false);
         m_match->m_highLightedSquare = IntVec2::INVALID;
     }
