@@ -10,7 +10,7 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/Camera.hpp"
-#include "Engine/Renderer/DebugRenderSystem.h"
+#include "Engine/Renderer/DebugRenderSystem.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 
 #include "Core/LoggerSubsystem.hpp"
@@ -57,7 +57,9 @@ Game::Game()
     g_theDevConsole->RegisterCommand("ChessServerInfo", "None", ChessMatchCommon::Command_ChessServerInfo);
     g_theDevConsole->RegisterCommand("ChessListen", "None", ChessMatchCommon::Command_ChessListen);
     g_theDevConsole->RegisterCommand("ChessConnect", "None", ChessMatchCommon::Command_ChessConnect);
-    g_theDevConsole->RegisterCommand("ChessDisconnect", "None", ChessMatchCommon::Command_ChessDisconnect);
+    g_theDevConsole->RegisterCommand("ChessDisconnect", "Disconnect from current chess session", ChessMatchCommon::Command_ChessDisconnect);
+    g_theDevConsole->RegisterCommand("ChessBegin", "Start a new chess game", ChessMatchCommon::Command_ChessBegin);
+    g_theDevConsole->RegisterCommand("ChessPlayerInfo", "Set player name for chess match", ChessMatchCommon::Command_ChessPlayerInfo);
     g_theDevConsole->RegisterCommand("Debug", "None", DebugCommon::Command_Debug);
     g_theDevConsole->RegisterCommand("RemoteCmd", "None", ChessMatchCommon::Command_RemoteCmd);
 
@@ -427,6 +429,8 @@ void Game::EnterAttractState()
 
 void Game::EnterMatchState()
 {
+    if (match != nullptr)
+        delete match;
     gameState = EGameState::MATCH;
     match     = new ChessMatch(this);
 }
