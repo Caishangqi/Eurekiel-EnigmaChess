@@ -33,5 +33,5 @@ class CollisionComponent : public IComponent, public IRenderable
 
 private:
     AABB3                   m_collisionBox;
-    std::vector<Vertex_PCU> m_debugVertexes; // Debug vertices for wireframe drawing
+    std::vector<Vertex_PCU> m_debugVertexes; // Debug m_vertices for wireframe drawing
 };
