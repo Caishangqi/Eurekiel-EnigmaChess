@@ -36,11 +36,13 @@ void TestModelActor::Initialize()
     m_meshComponent->m_diffuseTexture = g_theRenderer->CreateTextureFromFile("Data\\Models\\Woman\\Woman_Diffuse.png");
     m_meshComponent->m_normalTexture  = g_theRenderer->CreateTextureFromFile("Data\\Models\\Woman\\Woman_Normal.png");
 #endif
+
 #ifdef GLB_LOADER_TEST
     GlbModelLoader glbLoader(g_theRenderer);
-    auto           mesh       = glbLoader.Load(ResourceLocation("enigma", "rook"), "Data\\Models\\chess.glb");
-    m_meshComponent->m_shader = g_theRenderer->CreateOrGetShader("Data/Shaders/Diffuse", VertexType::Vertex_PCUTBN);
+    auto           mesh       = glbLoader.Load(ResourceLocation("enigma", "rook"), "Data\\Models\\Chess.glb");
     m_meshComponent->SetMesh(std::move(mesh));
+    m_meshComponent->m_shader = g_theRenderer->CreateOrGetShader("Data/Shaders/Diffuse", VertexType::Vertex_PCUTBN);
+    
 #endif
 }
 
