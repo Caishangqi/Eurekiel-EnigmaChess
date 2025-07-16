@@ -2,6 +2,7 @@
 
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Resource/Resource.hpp"
+#include "Engine/Resource/Loader/ModelLoader/GlbModelLoader.hpp"
 #include "Engine/Resource/Loader/ModelLoader/ObjModelLoader.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Core/Component/MeshComponent.hpp"
@@ -25,14 +26,22 @@ void TestModelActor::Initialize()
     m_collisionComponent->SetEnableDebugDraw(true);
     m_collisionComponent->SetDebugColor(Rgba8::DEBUG_BLUE);
     // Set the FMesh for the MeshComponent
-
+#define  GLB_LOADER_TEST
     // ObjModelLoader
+#ifdef OBJ_LOADER_TEST
     ObjModelLoader         objLoader(g_theRenderer);
     std::shared_ptr<FMesh> mesh = objLoader.Load(ResourceLocation("enigma", "cube"), "Data\\Models\\Woman\\Woman.obj");
     m_meshComponent->SetMesh(mesh);
     m_meshComponent->m_shader         = g_theRenderer->CreateOrGetShader("Data/Shaders/Diffuse", VertexType::Vertex_PCUTBN);
     m_meshComponent->m_diffuseTexture = g_theRenderer->CreateTextureFromFile("Data\\Models\\Woman\\Woman_Diffuse.png");
     m_meshComponent->m_normalTexture  = g_theRenderer->CreateTextureFromFile("Data\\Models\\Woman\\Woman_Normal.png");
+#endif
+#ifdef GLB_LOADER_TEST
+    GlbModelLoader glbLoader(g_theRenderer);
+    auto           mesh       = glbLoader.Load(ResourceLocation("enigma", "rook"), "Data\\Models\\chess.glb");
+    m_meshComponent->m_shader = g_theRenderer->CreateOrGetShader("Data/Shaders/Diffuse", VertexType::Vertex_PCUTBN);
+    m_meshComponent->SetMesh(std::move(mesh));
+#endif
 }
 
 void TestModelActor::OnTick(float deltaTime)
