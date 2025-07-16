@@ -79,13 +79,6 @@ void MeshComponent::Render(const RenderContext& ctx)
     ctx.renderer.BindTexture(m_normalTexture, 1);
     ctx.renderer.BindTexture(m_specGlossEmitTexture, 2);
     ctx.renderer.BindShader(m_shader);
-    ctx.renderer.SetLightConstants(ctx.lightingConstants);
-    if (!m_vertexesPCUTBN.empty() && m_indexBuffer != nullptr)
-        ctx.renderer.DrawVertexIndexed(m_vertexBufferPCUTBN, m_indexBuffer, static_cast<int>(m_indices.size()));
-    if (!m_vertexesPCUTBN.empty() && m_indexBuffer == nullptr)
-        ctx.renderer.DrawVertexBuffer(m_vertexBufferPCUTBN, static_cast<int>(m_vertexesPCUTBN.size()));
-    if (!m_vertexesPCU.empty())
-        ctx.renderer.DrawVertexBuffer(m_vertexBufferPCU, static_cast<int>(m_vertexesPCU.size()));
 
     if (IsMaterialValid(0))
     {
@@ -93,8 +86,15 @@ void MeshComponent::Render(const RenderContext& ctx)
         Texture* diffuse = m_mesh->GetMaterial(0)->GetTexture(EMaterialChannel::Specular);
         m_color          = Rgba8(m_mesh->GetMaterial(0)->baseColorFactor);
         ctx.renderer.BindTexture(diffuse, 0);
-        ctx.renderer.DrawVertexBuffer(m_mesh->vertexBuffer.get(), (int)m_mesh->GetVertexCount());
     }
+
+    ctx.renderer.SetLightConstants(ctx.lightingConstants);
+    if (!m_vertexesPCUTBN.empty() && m_indexBuffer != nullptr)
+        ctx.renderer.DrawVertexIndexed(m_vertexBufferPCUTBN, m_indexBuffer, static_cast<int>(m_indices.size()));
+    if (!m_vertexesPCUTBN.empty() && m_indexBuffer == nullptr)
+        ctx.renderer.DrawVertexBuffer(m_vertexBufferPCUTBN, static_cast<int>(m_vertexesPCUTBN.size()));
+    if (!m_vertexesPCU.empty())
+        ctx.renderer.DrawVertexBuffer(m_vertexBufferPCU, static_cast<int>(m_vertexesPCU.size()));
 }
 
 MeshComponent* MeshComponent::AppendVertices(std::vector<Vertex_PCUTBN> vertices, std::vector<unsigned int>& indices)
@@ -159,6 +159,7 @@ MeshComponent* MeshComponent::SetMesh(std::shared_ptr<FMesh> mesh)
     m_vertexesPCUTBN.clear();
     m_indices.clear();
     AppendVertices(mesh.get()->m_vertices);
+    AppendIndices(mesh.get()->m_indices);
     return this;
 }
 
