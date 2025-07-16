@@ -54,6 +54,21 @@ public:
     Rgba8                      m_color                = Rgba8::WHITE;
     BakedModel*                m_model                = nullptr;
 
+    // Material Base
+    MeshComponent* ApplyMaterial(const FMaterial& material);
+    MeshComponent* ApplyMaterialByIndex(size_t materialIndex);
+
+    // Material Texture
+    const FMaterial* GetCurrentMaterial() const;
+    size_t           GetMaterialCount() const;
+
+    // Material Texture Settings
+    MeshComponent* SetDiffuseTexture(std::unique_ptr<Texture> texture);
+    MeshComponent* SetNormalTexture(std::unique_ptr<Texture> texture);
+    MeshComponent* SetSpecularTexture(std::unique_ptr<Texture> texture);
+
+    bool  IsMaterialValid(size_t materialIndex) const;
+
 protected:
     void CreateBuffers();
     void CreateVertexBuffer();
@@ -67,7 +82,9 @@ private:
 
     std::shared_ptr<FMesh> m_mesh = nullptr;
 
-
-    // FMeshes meshes; Consider Packed add vertex data into the struct
-    // MeshComponent hold only FMeshes not bunch of vertex data
+    size_t m_currentMaterialIndex = 0;
+    // If Mesh component want their own texture copy
+    std::unique_ptr<Texture> m_ownedDiffuseTexture  = nullptr;
+    std::unique_ptr<Texture> m_ownedNormalTexture   = nullptr;
+    std::unique_ptr<Texture> m_ownedSpecularTexture = nullptr;
 };

@@ -1,8 +1,11 @@
 ﻿#include "MeshComponent.hpp"
 
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Game/GameCommon.hpp"
+#include "Game/Core/LoggerSubsystem.hpp"
 #include "Game/Core/Actor/Actor.hpp"
+#include "Engine/Renderer/Texture.hpp"
 #include "Game/Core/Render/BakedModel.hpp"
 #include "Game/Core/Render/RenderContext.hpp"
 #include "Game/Core/Render/RenderSubsystem.hpp"
@@ -83,6 +86,15 @@ void MeshComponent::Render(const RenderContext& ctx)
         ctx.renderer.DrawVertexBuffer(m_vertexBufferPCUTBN, static_cast<int>(m_vertexesPCUTBN.size()));
     if (!m_vertexesPCU.empty())
         ctx.renderer.DrawVertexBuffer(m_vertexBufferPCU, static_cast<int>(m_vertexesPCU.size()));
+
+    if (IsMaterialValid(0))
+    {
+        m_mesh->EnsureGPUBuffers(&ctx.renderer);
+        Texture* diffuse = m_mesh->GetMaterial(0)->GetTexture(EMaterialChannel::Specular);
+        m_color          = Rgba8(m_mesh->GetMaterial(0)->baseColorFactor);
+        ctx.renderer.BindTexture(diffuse, 0);
+        ctx.renderer.DrawVertexBuffer(m_mesh->vertexBuffer.get(), (int)m_mesh->GetVertexCount());
+    }
 }
 
 MeshComponent* MeshComponent::AppendVertices(std::vector<Vertex_PCUTBN> vertices, std::vector<unsigned int>& indices)
@@ -159,6 +171,110 @@ void MeshComponent::UploadIfDirty()
         CopyBufferData();
         m_dirty = false;
     }
+}
+
+MeshComponent* MeshComponent::ApplyMaterial(const FMaterial& material)
+{
+    if (material.HasTexture(EMaterialChannel::Albedo)) m_diffuseTexture = material.GetTexture(EMaterialChannel::Albedo);
+
+    if (material.HasTexture(EMaterialChannel::Normal)) m_normalTexture = material.GetTexture(EMaterialChannel::Normal);
+
+    if (material.HasTexture(EMaterialChannel::MetallicRoughness)) m_specGlossEmitTexture = material.GetTexture(EMaterialChannel::MetallicRoughness);
+
+    if (material.HasTexture(EMaterialChannel::Occlusion))
+    {
+    }
+
+    if (material.HasTexture(EMaterialChannel::Emission))
+    {
+    }
+
+    // 应用材质参数
+    m_color = Rgba8(
+        static_cast<unsigned char>(RangeMapClamped(material.baseColorFactor.x, 0.0f, 1.0f, 0.f, 255.f)),
+        static_cast<unsigned char>(RangeMapClamped(material.baseColorFactor.y, 0.0f, 1.0f, 0.f, 255.f)),
+        static_cast<unsigned char>(RangeMapClamped(material.baseColorFactor.z, 0.0f, 1.0f, 0.f, 255.f)),
+        static_cast<unsigned char>(RangeMapClamped(material.baseColorFactor.w, 0.0f, 1.0f, 0.f, 255.f))
+    );
+    return this;
+}
+
+MeshComponent* MeshComponent::ApplyMaterialByIndex(size_t materialIndex)
+{
+    if (!m_mesh || materialIndex >= m_mesh->GetMaterialCount())
+    {
+        LOG(LogResource, Warning, Stringf("Invalid material index: %d (available: %d)",
+                materialIndex, m_mesh ? m_mesh->GetMaterialCount() : 0).c_str());
+        return this;
+    }
+
+    const FMaterial* material = m_mesh->GetMaterial(materialIndex);
+    if (material)
+    {
+        m_currentMaterialIndex = materialIndex;
+        ApplyMaterial(*material);
+
+        LOG(LogResource, Info, Stringf("Switched to material %d: %s",
+                materialIndex, material->name.c_str()).c_str());
+    }
+
+    return this;
+}
+
+const FMaterial* MeshComponent::GetCurrentMaterial() const
+{
+    if (!m_mesh || m_currentMaterialIndex >= m_mesh->GetMaterialCount())
+    {
+        return nullptr;
+    }
+    return m_mesh->GetMaterial(m_currentMaterialIndex);
+}
+
+size_t MeshComponent::GetMaterialCount() const
+{
+    return m_mesh ? m_mesh->GetMaterialCount() : 0;
+}
+
+MeshComponent* MeshComponent::SetDiffuseTexture(std::unique_ptr<Texture> texture)
+{
+    m_ownedDiffuseTexture = std::move(texture);
+    m_diffuseTexture      = m_ownedDiffuseTexture.get();
+    return this;
+}
+
+MeshComponent* MeshComponent::SetNormalTexture(std::unique_ptr<Texture> texture)
+{
+    m_ownedNormalTexture = std::move(texture);
+    m_normalTexture      = m_ownedNormalTexture.get();
+    return this;
+}
+
+MeshComponent* MeshComponent::SetSpecularTexture(std::unique_ptr<Texture> texture)
+{
+    m_ownedSpecularTexture = std::move(texture);
+    m_specGlossEmitTexture = m_ownedSpecularTexture.get();
+    return this;
+}
+
+bool MeshComponent::IsMaterialValid(size_t materialIndex) const
+{
+    if (!m_mesh || materialIndex >= m_mesh->GetMaterialCount())
+    {
+        return false;
+    }
+
+    const FMaterial* material = m_mesh->GetMaterial(materialIndex);
+    if (!material)
+    {
+        return false;
+    }
+
+    if (!material->HasTexture(EMaterialChannel::Albedo))
+    {
+        LOG(LogResource, Warning, Stringf("Material '%s' has no albedo texture", material->name.c_str()).c_str());
+    }
+
+    return true;
 }
 
 void MeshComponent::CreateBuffers()
