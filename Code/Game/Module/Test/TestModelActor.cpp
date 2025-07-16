@@ -28,8 +28,8 @@ void TestModelActor::Initialize()
 
     // ObjModelLoader
     ObjModelLoader         objLoader(g_theRenderer);
-    std::unique_ptr<FMesh> mesh = objLoader.Load(ResourceLocation("enigma", "cube"), "Data\\Models\\Woman\\Woman.obj");
-    m_meshComponent->SetMesh(*mesh.get());
+    std::shared_ptr<FMesh> mesh = objLoader.Load(ResourceLocation("enigma", "cube"), "Data\\Models\\Woman\\Woman.obj");
+    m_meshComponent->SetMesh(mesh);
     m_meshComponent->m_shader         = g_theRenderer->CreateOrGetShader("Data/Shaders/Diffuse", VertexType::Vertex_PCUTBN);
     m_meshComponent->m_diffuseTexture = g_theRenderer->CreateTextureFromFile("Data\\Models\\Woman\\Woman_Diffuse.png");
     m_meshComponent->m_normalTexture  = g_theRenderer->CreateTextureFromFile("Data\\Models\\Woman\\Woman_Normal.png");
