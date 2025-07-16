@@ -141,12 +141,12 @@ MeshComponent* MeshComponent::SetModel(BakedModel* model)
     return this;
 }
 
-MeshComponent* MeshComponent::SetMesh(FMesh& mesh)
+MeshComponent* MeshComponent::SetMesh(std::shared_ptr<FMesh> mesh)
 {
     m_mesh = mesh;
     m_vertexesPCUTBN.clear();
     m_indices.clear();
-    AppendVertices(mesh.vertices);
+    AppendVertices(mesh.get()->m_vertices);
     return this;
 }
 

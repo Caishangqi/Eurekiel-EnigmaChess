@@ -38,7 +38,7 @@ public:
     MeshComponent* AppendIndices(std::vector<unsigned int>& indices);
     MeshComponent* Build(BakedModel* model); // Build Vertices and Indices from BakedModel
     MeshComponent* SetModel(BakedModel* model);
-    MeshComponent* SetMesh(FMesh& mesh);
+    MeshComponent* SetMesh(std::shared_ptr<FMesh> mesh);
     void           UploadIfDirty();
 
     std::vector<Vertex_PCUTBN> m_vertexesPCUTBN;
@@ -64,7 +64,8 @@ protected:
 private:
     bool m_dirty = false;
 
-    FMesh m_mesh;
+
+    std::shared_ptr<FMesh> m_mesh = nullptr;
 
 
     // FMeshes meshes; Consider Packed add vertex data into the struct
