@@ -71,6 +71,15 @@ void MeshComponent::Render(const RenderContext& ctx)
 {
     UploadIfDirty();
     if (m_vertexesPCUTBN.empty() && m_vertexesPCU.empty()) return;
+
+    if (IsMaterialValid(0))
+    {
+        m_mesh->EnsureGPUBuffers(&ctx.renderer);
+        m_diffuseTexture = m_mesh->GetMaterial(0)->GetTexture(EMaterialChannel::Specular);
+        m_color          = Rgba8(m_mesh->GetMaterial(0)->baseColorFactor);
+        ctx.renderer.BindTexture(m_diffuseTexture, 0);
+    }
+
     Mat44 matrix;
     matrix = GetOwner()->GetModelToWorldTransform();
     matrix.AppendTranslation3D(m_position);
@@ -80,13 +89,6 @@ void MeshComponent::Render(const RenderContext& ctx)
     ctx.renderer.BindTexture(m_specGlossEmitTexture, 2);
     ctx.renderer.BindShader(m_shader);
 
-    if (IsMaterialValid(0))
-    {
-        m_mesh->EnsureGPUBuffers(&ctx.renderer);
-        Texture* diffuse = m_mesh->GetMaterial(0)->GetTexture(EMaterialChannel::Specular);
-        m_color          = Rgba8(m_mesh->GetMaterial(0)->baseColorFactor);
-        ctx.renderer.BindTexture(diffuse, 0);
-    }
 
     ctx.renderer.SetLightConstants(ctx.lightingConstants);
     if (!m_vertexesPCUTBN.empty() && m_indexBuffer != nullptr)
@@ -272,7 +274,7 @@ bool MeshComponent::IsMaterialValid(size_t materialIndex) const
 
     if (!material->HasTexture(EMaterialChannel::Albedo))
     {
-        LOG(LogResource, Warning, Stringf("Material '%s' has no albedo texture", material->name.c_str()).c_str());
+        //LOG(LogResource, Warning, Stringf("Material '%s' has no albedo texture", material->name.c_str()).c_str());
     }
 
     return true;
