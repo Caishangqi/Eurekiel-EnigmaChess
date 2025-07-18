@@ -201,6 +201,7 @@
         <ClCompile Include="Core\Component\MeshComponent.cpp" />
         <ClCompile Include="Core\LoggerSubsystem.cpp" />
         <ClCompile Include="Core\Network\NetworkDispatcher.cpp" />
+        <ClCompile Include="Core\PostProcess\PostProcessEffect.cpp" />
         <ClCompile Include="Core\Render\BakedModel.cpp" />
         <ClCompile Include="Core\Render\Renderable.cpp" />
         <ClCompile Include="Core\Render\RenderSubsystem.cpp" />
@@ -240,6 +241,7 @@
         <ClInclude Include="Core\Component\MeshComponent.hpp" />
         <ClInclude Include="Core\LoggerSubsystem.hpp" />
         <ClInclude Include="Core\Network\NetworkDispatcher.hpp" />
+        <ClInclude Include="Core\PostProcess\PostProcessEffect.hpp" />
         <ClInclude Include="Core\Render\BakedModel.hpp" />
         <ClInclude Include="Core\Render\Renderable.hpp" />
         <ClInclude Include="Core\Render\RenderContext.hpp" />
