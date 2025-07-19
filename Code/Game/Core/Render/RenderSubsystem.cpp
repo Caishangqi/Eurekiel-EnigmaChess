@@ -6,6 +6,8 @@
 #include "RenderContext.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Renderer/IRenderer.hpp"
+#include "Engine/Window/Window.hpp"
+#include "Game/App.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Core/LoggerSubsystem.hpp"
 #include "Game/Core/Component/Component.hpp"
@@ -34,28 +36,30 @@ void RenderSubsystem::Unregister(IRenderable* r)
 
 void RenderSubsystem::RenderWorld(const Camera& camera, LightingConstants& lightConstants, FrameConstants& frameConstants)
 {
-    m_renderer.BeginCamera(camera);
-    RenderContext ctx{m_renderer, camera, lightConstants, frameConstants};
-
-    for (IRenderable* r : m_renderables)
+    // If post-processing is enabled, render to Scene RT first
+    if (m_postProcessEnabled && !m_postProcessEffects.empty())
     {
-        // whether or not is a component
-        auto comp = dynamic_cast<IComponent*>(r);
-        if (comp)
+        // Make sure that the render target is created
+        if (!m_sceneRenderTarget)
         {
-            if (comp->GetEnable())
-                r->Render(ctx); // component renderer
+            IntVec2 screenSize  = g_theWindow->GetClientDimensions();
+            m_sceneRenderTarget = m_renderer.CreateRenderTarget(screenSize, DXGI_FORMAT_R8G8B8A8_UNORM);
+            m_postProcessRT1    = m_renderer.CreateRenderTarget(screenSize, DXGI_FORMAT_R8G8B8A8_UNORM);
+            m_postProcessRT2    = m_renderer.CreateRenderTarget(screenSize, DXGI_FORMAT_R8G8B8A8_UNORM);
         }
-        else if (r != nullptr)
-        {
-            r->Render(ctx); // Non-component renderer, like widget, particle etc.
-        }
+
+        // Render the scene to a render target
+        RenderSceneToTarget(camera, lightConstants, frameConstants, m_sceneRenderTarget);
+
+        // Perform post-processing
+        RenderTarget* backBuffer = m_renderer.GetBackBufferRenderTarget();
+        ProcessPostEffects(m_sceneRenderTarget, backBuffer);
     }
-    ctx.renderer.SetLightConstants(lightConstants);
-    ctx.renderer.SetFrameConstants(frameConstants); // Not in mesh component because this is global
-    m_renderer.BindShader(nullptr);
-    m_renderer.BindTexture(nullptr);
-    m_renderer.EndCamera(camera);
+    else
+    {
+        // Renders directly to the background buffer
+        RenderSceneToTarget(camera, lightConstants, frameConstants, nullptr);
+    }
 }
 
 void RenderSubsystem::AddPostProcessEffect(std::unique_ptr<PostProcessEffect> effect)
@@ -120,6 +124,38 @@ void RenderSubsystem::Shutdown()
  */
 void RenderSubsystem::RenderSceneToTarget(const Camera& camera, LightingConstants& lightConstants, FrameConstants& frameConstants, RenderTarget* target)
 {
+    // Set the render target
+    if (target)
+    {
+        m_renderer.SetRenderTarget(target);
+        m_renderer.ClearRenderTarget(target, Rgba8(20, 20, 30, 255));
+    }
+
+    m_renderer.BeginCamera(camera);
+    RenderContext ctx{m_renderer, camera, lightConstants, frameConstants};
+
+    for (IRenderable* r : m_renderables)
+    {
+        if (!r) continue;
+
+        // Check if it's a component
+        auto comp = dynamic_cast<IComponent*>(r);
+        if (comp)
+        {
+            if (comp->GetEnable())
+                r->Render(ctx);
+        }
+        else
+        {
+            r->Render(ctx);
+        }
+    }
+
+    ctx.renderer.SetLightConstants(lightConstants);
+    ctx.renderer.SetFrameConstants(frameConstants);
+    m_renderer.BindShader(nullptr);
+    m_renderer.BindTexture(nullptr);
+    m_renderer.EndCamera(camera);
 }
 
 /**
@@ -164,6 +200,7 @@ void RenderSubsystem::ProcessPostEffects(RenderTarget* sceneRT, RenderTarget* ou
             currentOutput = outputRT;
 
         // Process the effects
+        effect->SetState();
         effect->Process(currentInput, currentOutput);
 
         // Swap the input and output buffers RTV
