@@ -37,15 +37,8 @@ public:
     virtual void Shutdown() = 0;
 
     // Process Effect
-    /**
-     * @brief Processes a post-processing effect on the given input render target and outputs the result to the specified output render target.
-     *
-     * This method should be implemented by subclasses to define the specific functionality of the post-processing effect.
-     *
-     * @param input The input render target on which the effect will be applied.
-     * @param output The output render target where the processed result will be stored.
-     */
-    virtual void Process(RenderTarget* input, RenderTarget* output) = 0;
+    virtual void Process(RenderTarget* input, RenderTarget* output);
+    virtual void SetState(IRenderer& renderer) = 0;
 
     // Enable and Disable
     void SetEnable(bool enabled) { m_enabled = enabled; }
@@ -58,7 +51,7 @@ public:
     const std::string& GetName() const { return m_name; }
 
 protected:
-    std::string m_name     = "";
+    std::string m_name;
     int         m_priority = 0;
     bool        m_enabled  = false;
 };
