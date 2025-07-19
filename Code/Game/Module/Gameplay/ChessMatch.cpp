@@ -74,9 +74,9 @@ ChessMatch::ChessMatch(Game* game) : m_game(game)
     /// Post Process
     auto bloomEffect = std::make_unique<EffectBloom>("Bloom", 0);
     m_bloomEffect    = bloomEffect.get();
-    bloomEffect->SetThreshold(0.8f); // 只有亮度超过0.8的部分会产生光晕
-    bloomEffect->SetIntensity(1.5f); // 光晕强度
-    bloomEffect->SetBlurSigma(2.0f); // 模糊程度
+    bloomEffect->SetThreshold(0.1f); // 只有亮度超过0.8的部分会产生光晕
+    bloomEffect->SetIntensity(4.5f); // 光晕强度
+    bloomEffect->SetBlurSigma(5.0f); // 模糊程度
     bloomEffect->SetBloomLevels(5); // 使用5级模糊
     g_theRenderSubsystem->AddPostProcessEffect(std::move(bloomEffect));
 }
