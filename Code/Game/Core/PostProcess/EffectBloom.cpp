@@ -10,6 +10,10 @@
 
 EffectBloom::EffectBloom(const std::string& name, int priority) : PostProcessEffect("Bloom", 0)
 {
+    m_bloomConstants.threshold = 0.5f;
+    m_bloomConstants.intensity = 1.2f;
+    m_bloomConstants.blurSigma = 2.0f;
+    m_bloomConstants.padding = 0.0f;
 }
 
 EffectBloom::~EffectBloom()
@@ -67,6 +71,11 @@ void EffectBloom::Process(RenderTarget* input, RenderTarget* output)
 
 void EffectBloom::SetState()
 {
+    // 设置后处理的标准渲染状态
+    m_renderer->SetDepthMode(DepthMode::DISABLED);           // 禁用深度测试
+    m_renderer->SetRasterizerMode(RasterizerMode::SOLID_CULL_NONE); // 不裁剪背面
+    m_renderer->SetSamplerMode(SamplerMode::BILINEAR_WRAP, 0);       // 线性采样
+    m_renderer->SetBlendMode(BlendMode::OPAQUE);             // 不透明混合
 }
 
 void EffectBloom::SetThreshold(float threshold)
@@ -180,6 +189,8 @@ void EffectBloom::CreateRenderTargets(IRenderer& renderer)
 
 void EffectBloom::ExtractBrightness(IRenderer& renderer, RenderTarget* source, RenderTarget* dest)
 {
+    renderer.BindTexture(nullptr, 0);
+
     renderer.SetRenderTarget(dest);
     renderer.SetViewport(dest->GetDimensions());
     renderer.ClearRenderTarget(dest, Rgba8::BLACK);
@@ -198,7 +209,10 @@ void EffectBloom::DownsampleBlur(IRenderer& renderer, int level)
     // Source texture
     RenderTarget* source = (level == 0) ? m_brightnessRT : m_bloomMipChain[level - 1].blurTemp;
 
-    // Down sampling
+    // === Down sampling ===
+    // 解绑可能冲突的纹理
+    renderer.BindTexture(nullptr, 0);
+
     renderer.SetRenderTarget(currentLevel.downsample);
     renderer.SetViewport(currentLevel.size);
     renderer.ClearRenderTarget(currentLevel.downsample, Rgba8::BLACK);
@@ -213,7 +227,10 @@ void EffectBloom::DownsampleBlur(IRenderer& renderer, int level)
 
     DrawFullscreenQuad(renderer);
 
-    // Horizontal Blur
+    // === Horizontal Blur ===
+    // 解绑可能冲突的纹理
+    renderer.BindTexture(nullptr, 0);
+
     renderer.SetRenderTarget(currentLevel.blurTemp);
     renderer.ClearRenderTarget(currentLevel.blurTemp, Rgba8::BLACK);
 
@@ -223,14 +240,17 @@ void EffectBloom::DownsampleBlur(IRenderer& renderer, int level)
     SetBlurDirection(renderer, true); // horizontal
     DrawFullscreenQuad(renderer);
 
-    // Vertical Blur
+    // === Vertical Blur ===
+    // 解绑可能冲突的纹理
+    renderer.BindTexture(nullptr, 0);
+
     renderer.SetRenderTarget(currentLevel.downsample);
     renderer.BindTexture(currentLevel.blurTemp->texture, 0);
 
     SetBlurDirection(renderer, false); // vertically
     DrawFullscreenQuad(renderer);
 
-    // The end result is in blurTemp
+    // The end result is in downsample, but we want it in blurTemp for consistency
     std::swap(currentLevel.downsample, currentLevel.blurTemp);
 }
 
@@ -239,26 +259,34 @@ void EffectBloom::UpsampleCombine(IRenderer& renderer, int level)
     auto& currentLevel = m_bloomMipChain[level];
     auto& higherLevel  = m_bloomMipChain[level + 1];
 
+    // 解绑可能冲突的纹理
+    renderer.BindTexture(nullptr, 0);
+    renderer.BindTexture(nullptr, 1);
+
     renderer.SetRenderTarget(currentLevel.downsample);
     renderer.SetViewport(currentLevel.size);
 
     renderer.BindShader(m_upsampleShader);
 
     // Bind two textures
-    renderer.BindTexture(higherLevel.blurTemp->texture, 0); // Last level
-    renderer.BindTexture(currentLevel.blurTemp->texture, 1); // Current level
+    renderer.BindTexture(higherLevel.blurTemp->texture, 0); // Lower resolution (higher level)
+    renderer.BindTexture(currentLevel.blurTemp->texture, 1); // Current resolution
 
     // Additive mixing
     renderer.SetBlendMode(BlendMode::ADDITIVE);
 
     DrawFullscreenQuad(renderer);
 
-    // Swap buffers
+    // Swap buffers - result is now in blurTemp for consistency
     std::swap(currentLevel.downsample, currentLevel.blurTemp);
 }
 
 void EffectBloom::FinalComposite(IRenderer& renderer, RenderTarget* scene, RenderTarget* bloom, RenderTarget* output)
 {
+    // 解绑可能冲突的纹理
+    renderer.BindTexture(nullptr, 0);
+    renderer.BindTexture(nullptr, 1);
+    
     renderer.SetRenderTarget(output);
     renderer.SetViewport(output->GetDimensions());
     renderer.SetBlendMode(BlendMode::OPAQUE);
