@@ -194,6 +194,7 @@
         <Content Include="..\..\Run\Data\Shaders\Default.hlsl" />
         <Content Include="..\..\Run\Data\Shaders\Diffuse.hlsl" />
         <Content Include="..\..\Run\Data\Shaders\BlinnPhong.hlsl" />
+        <Content Include="..\..\Run\Data\Shaders\Bloom.hlsl" />
         <ClCompile Include="..\..\Run\Data\Shaders\ShaderMath.hlsl" />
         <ClCompile Include="Core\Actor\Actor.cpp" />
         <ClCompile Include="Core\Component\CollisionComponent.cpp" />
