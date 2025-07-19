@@ -5,6 +5,7 @@
 PostProcessEffect::PostProcessEffect(const std::string& name, int priority) : m_name(name), m_priority(priority), m_enabled(true)
 {
 }
+
 /**
  * @brief Processes a post-processing effect on the given input render target and outputs the result to the specified output render target.
  *
@@ -26,14 +27,12 @@ void PostProcessEffect::Process(RenderTarget* input, RenderTarget* output)
  * the renderer is in the correct configuration to handle a full-screen
  * post-processing operation.
  *
- * @param renderer A reference to the renderer instance whose state will
- *        be configured for post-processing.
  */
-void PostProcessEffect::SetState(IRenderer& renderer)
+void PostProcessEffect::SetState()
 {
     // Standard state configuration for post-processing
-    renderer.SetDepthMode(DepthMode::DISABLED); // 2D processing does not require depth
-    renderer.SetRasterizerMode(RasterizerMode::SOLID_CULL_NONE); // full screen quadrilateral
-    renderer.SetSamplerMode(SamplerMode::BILINEAR_WRAP, 0); // Linear sampling
-    renderer.SetBlendMode(BlendMode::OPAQUE); // Initial unmixed
+    m_renderer->SetDepthMode(DepthMode::DISABLED); // 2D processing does not require depth
+    m_renderer->SetRasterizerMode(RasterizerMode::SOLID_CULL_NONE); // full screen quadrilateral
+    m_renderer->SetSamplerMode(SamplerMode::BILINEAR_WRAP, 0); // Linear sampling
+    m_renderer->SetBlendMode(BlendMode::OPAQUE); // Initial unmixed
 };

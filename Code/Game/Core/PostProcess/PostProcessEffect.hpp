@@ -38,7 +38,7 @@ public:
 
     // Process Effect
     virtual void Process(RenderTarget* input, RenderTarget* output);
-    virtual void SetState(IRenderer& renderer) = 0;
+    virtual void SetState() = 0;
 
     // Enable and Disable
     void SetEnable(bool enabled) { m_enabled = enabled; }
