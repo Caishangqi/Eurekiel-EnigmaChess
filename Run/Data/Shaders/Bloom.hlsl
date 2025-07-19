@@ -1,4 +1,4 @@
-﻿//------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
 // Bloom Post-Processing Shader
 // Implements multi-pass bloom effect with brightness extraction and gaussian blur
 //------------------------------------------------------------------------------------------------
@@ -72,6 +72,15 @@ float3 SampleBox(Texture2D tex, float2 uv, float2 texelSize)
 }
 
 //------------------------------------------------------------------------------------------------
+// Pre-calculated gaussian weights for 15-tap kernel (sigma = 2.0)
+//------------------------------------------------------------------------------------------------
+static const float GaussianWeights[15] =
+{
+    0.00239f, 0.00932f, 0.02745f, 0.06136f, 0.10407f, 0.13390f, 0.13084f, 0.09703f,
+    0.05462f, 0.02332f, 0.00755f, 0.00186f, 0.00035f, 0.00005f, 0.00001f
+};
+
+//------------------------------------------------------------------------------------------------
 // Pixel Shader - Brightness Extraction Pass
 //------------------------------------------------------------------------------------------------
 float4 BrightnessExtractPS(VertexOutPixelIn input) : SV_Target0
@@ -96,7 +105,7 @@ float4 BrightnessExtractPS(VertexOutPixelIn input) : SV_Target0
 float4 DownsamplePS(VertexOutPixelIn input) : SV_Target0
 {
     float2 texelSize = c_texelSize;
-    float3 color     = float3(0.0f, 0.0f, 0.0f);
+    float3 color = float3(0.0f, 0.0f, 0.0f);
 
     // Center tap
     color += t_sourceTexture.Sample(s_linearSampler, input.uv).rgb * 0.125f;
@@ -123,16 +132,9 @@ float4 DownsamplePS(VertexOutPixelIn input) : SV_Target0
 //------------------------------------------------------------------------------------------------
 // Pixel Shader - Gaussian Blur Pass (Separable)
 //------------------------------------------------------------------------------------------------
-// Pre-calculated gaussian weights for 15-tap kernel (sigma = 2.0)
-static const float GaussianWeights[15] =
-{
-    0.00239f, 0.00932f, 0.02745f, 0.06136f, 0.10407f, 0.13390f, 0.13084f, 0.09703f,
-    0.05462f, 0.02332f, 0.00755f, 0.00186f, 0.00035f, 0.00005f, 0.00001f
-};
-
 float4 GaussianBlurPS(VertexOutPixelIn input) : SV_Target0
 {
-    float3 color  = float3(0.0f, 0.0f, 0.0f);
+    float3 color = float3(0.0f, 0.0f, 0.0f);
     float2 offset = float2(0.0f, 0.0f);
 
     // Determine blur direction
@@ -149,9 +151,9 @@ float4 GaussianBlurPS(VertexOutPixelIn input) : SV_Target0
     [unroll]
     for (int i = -7; i <= 7; ++i)
     {
-        float2 sampleUV    = input.uv + offset * float(i);
+        float2 sampleUV = input.uv + offset * float(i);
         float3 sampleColor = t_sourceTexture.Sample(s_linearSampler, sampleUV).rgb;
-        color += sampleColor * GaussianWeights[abs(i) + 7];
+        color += sampleColor * GaussianWeights[abs(i)];
     }
 
     return float4(color, 1.0f);
