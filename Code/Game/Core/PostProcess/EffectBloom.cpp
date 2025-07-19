@@ -47,6 +47,11 @@ void EffectBloom::Process(RenderTarget* input, RenderTarget* output)
 {
 }
 
+void EffectBloom::SetState(IRenderer& renderer)
+{
+    UNUSED(renderer)
+}
+
 void EffectBloom::SetThreshold(float threshold)
 {
     m_bloomConstants.threshold = threshold;
@@ -159,11 +164,11 @@ void EffectBloom::CreateRenderTargets(IRenderer& renderer)
 void EffectBloom::ExtractBrightness(IRenderer& renderer, RenderTarget* source, RenderTarget* dest)
 {
     renderer.SetRenderTarget(dest);
-    renderer.SetViewport(dest->dimensions);
+    renderer.SetViewport(dest->GetDimensions());
     renderer.ClearRenderTarget(dest, Rgba8::BLACK);
 
     renderer.BindShader(m_brightnessExtractShader);
-    renderer.BindTexture(source->srv, 0);
+    renderer.BindTexture(source->texture, 0);
     renderer.BindConstantBuffer(0, m_bloomConstantsCB);
 
     DrawFullscreenQuad(renderer);
@@ -182,7 +187,7 @@ void EffectBloom::DownsampleBlur(IRenderer& renderer, int level)
     renderer.ClearRenderTarget(currentLevel.downsample, Rgba8::BLACK);
 
     renderer.BindShader(m_downsampleShader);
-    renderer.BindTexture(source->srv, 0);
+    renderer.BindTexture(source->texture, 0);
 
     // Update texel size
     m_blurConstants.texelSize = Vec2(1.0f / (float)currentLevel.size.x, 1.0f / (float)currentLevel.size.y);
@@ -196,14 +201,14 @@ void EffectBloom::DownsampleBlur(IRenderer& renderer, int level)
     renderer.ClearRenderTarget(currentLevel.blurTemp, Rgba8::BLACK);
 
     renderer.BindShader(m_gaussianBlurShader);
-    renderer.BindTexture(currentLevel.downsample->srv, 0);
+    renderer.BindTexture(currentLevel.downsample->texture, 0);
 
     SetBlurDirection(renderer, true); // horizontal
     DrawFullscreenQuad(renderer);
 
     // Vertical Blur
     renderer.SetRenderTarget(currentLevel.downsample);
-    renderer.BindTexture(currentLevel.blurTemp->srv, 0);
+    renderer.BindTexture(currentLevel.blurTemp->texture, 0);
 
     SetBlurDirection(renderer, false); // vertically
     DrawFullscreenQuad(renderer);
@@ -223,8 +228,8 @@ void EffectBloom::UpsampleCombine(IRenderer& renderer, int level)
     renderer.BindShader(m_upsampleShader);
 
     // Bind two textures
-    renderer.BindTexture(higherLevel.blurTemp->srv, 0); // Last level
-    renderer.BindTexture(currentLevel.blurTemp->srv, 1); // Current level
+    renderer.BindTexture(higherLevel.blurTemp->texture, 0); // Last level
+    renderer.BindTexture(currentLevel.blurTemp->texture, 1); // Current level
 
     // Additive mixing
     renderer.SetBlendMode(BlendMode::ADDITIVE);
@@ -238,12 +243,12 @@ void EffectBloom::UpsampleCombine(IRenderer& renderer, int level)
 void EffectBloom::FinalComposite(IRenderer& renderer, RenderTarget* scene, RenderTarget* bloom, RenderTarget* output)
 {
     renderer.SetRenderTarget(output);
-    renderer.SetViewport(output->dimensions);
+    renderer.SetViewport(output->GetDimensions());
     renderer.SetBlendMode(BlendMode::OPAQUE);
 
     renderer.BindShader(m_compositeShader);
-    renderer.BindTexture(scene->srv, 0);
-    renderer.BindTexture(bloom->srv, 1);
+    renderer.BindTexture(scene->texture, 0);
+    renderer.BindTexture(bloom->texture, 1);
     renderer.BindConstantBuffer(0, m_bloomConstantsCB);
 
     DrawFullscreenQuad(renderer);
