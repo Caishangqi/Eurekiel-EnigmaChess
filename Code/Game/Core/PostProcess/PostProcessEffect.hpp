@@ -54,4 +54,5 @@ protected:
     std::string m_name;
     int         m_priority = 0;
     bool        m_enabled  = false;
+    IRenderer*  m_renderer = nullptr;
 };
