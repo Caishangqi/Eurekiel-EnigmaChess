@@ -36,7 +36,7 @@ public:
     void Shutdown() override;
 
     void Process(RenderTarget* input, RenderTarget* output) override;
-    void SetState(IRenderer& renderer) override;
+    void SetState() override;
 
     /// Parameter Setting
     void SetThreshold(float threshold);

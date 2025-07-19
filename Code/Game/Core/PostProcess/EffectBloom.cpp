@@ -45,11 +45,28 @@ void EffectBloom::Shutdown()
 
 void EffectBloom::Process(RenderTarget* input, RenderTarget* output)
 {
+    ExtractBrightness(*m_renderer, input, m_brightnessRT);
+
+    // Downsampling and blurring
+    RenderTarget* currentSource = m_brightnessRT;
+    for (int i = 0; i < m_bloomLevels; ++i)
+    {
+        DownsampleBlur(*m_renderer, i);
+        currentSource = m_bloomMipChain[i].blurTemp;
+    }
+
+    // Upsampling and merging
+    for (int i = m_bloomLevels - 2; i >= 0; --i)
+    {
+        UpsampleCombine(*m_renderer, i);
+    }
+
+    // Final composit
+    FinalComposite(*m_renderer, input, m_bloomMipChain[0].blurTemp, output);
 }
 
-void EffectBloom::SetState(IRenderer& renderer)
+void EffectBloom::SetState()
 {
-    UNUSED(renderer)
 }
 
 void EffectBloom::SetThreshold(float threshold)
