@@ -16,6 +16,8 @@
 #include "Game/Core/Actor/Actor.hpp"
 #include "Game/Core/Component/CollisionComponent.hpp"
 #include "Game/Core/Component/MeshComponent.hpp"
+#include "Game/Core/PostProcess/EffectBloom.hpp"
+#include "Game/Core/Render/RenderSubsystem.hpp"
 #include "Game/Module/Definition/ChessPieceDefinition.hpp"
 #include "Game/Module/Test/TestModelActor.hpp"
 
@@ -68,6 +70,15 @@ ChessMatch::ChessMatch(Game* game) : m_game(game)
     /// TODO: Remove at release
     auto testModelActor = new TestModelActor();
     SpawnActor(Vec3(4, 4, 4), EulerAngles(), testModelActor);
+
+    /// Post Process
+    auto bloomEffect = std::make_unique<EffectBloom>("Bloom", 0);
+    m_bloomEffect    = bloomEffect.get();
+    bloomEffect->SetThreshold(0.8f); // 只有亮度超过0.8的部分会产生光晕
+    bloomEffect->SetIntensity(1.5f); // 光晕强度
+    bloomEffect->SetBlurSigma(2.0f); // 模糊程度
+    bloomEffect->SetBloomLevels(5); // 使用5级模糊
+    g_theRenderSubsystem->AddPostProcessEffect(std::move(bloomEffect));
 }
 
 ChessMatch::~ChessMatch()

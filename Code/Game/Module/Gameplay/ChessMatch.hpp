@@ -9,6 +9,7 @@
 #include "Game/Core/Serilization/Serializable.hpp"
 #include "Game/Module/Lib/ChessMatchCommon.hpp"
 
+class EffectBloom;
 class Game;
 class ChessPlayer;
 class ChessPiece;
@@ -89,4 +90,7 @@ protected:
     /// Test Lights
     Light m_pointLight;
     Light m_spotLight;
+
+    /// Test PostProcess
+    EffectBloom* m_bloomEffect = nullptr;
 };
