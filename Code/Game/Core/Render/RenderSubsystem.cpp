@@ -50,10 +50,18 @@ void RenderSubsystem::RenderWorld(const Camera& camera, LightingConstants& light
 
         // Render the scene to a render target
         RenderSceneToTarget(camera, lightConstants, frameConstants, m_sceneRenderTarget);
-
+        
         // Perform post-processing
         RenderTarget* backBuffer = m_renderer.GetBackBufferRenderTarget();
         ProcessPostEffects(m_sceneRenderTarget, backBuffer);
+        
+        // 确保最终渲染目标是 backbuffer
+        m_renderer.SetRenderTarget(nullptr);
+        
+        // 恢复渲染状态（后处理可能改变了这些状态）
+        m_renderer.SetDepthMode(DepthMode::READ_WRITE_LESS_EQUAL);
+        m_renderer.SetBlendMode(BlendMode::ALPHA);
+        m_renderer.SetRasterizerMode(RasterizerMode::SOLID_CULL_BACK);
     }
     else
     {
@@ -135,7 +143,6 @@ void RenderSubsystem::RenderSceneToTarget(const Camera& camera, LightingConstant
     m_renderer.SetBlendMode(BlendMode::OPAQUE);
     m_renderer.SetDepthMode(DepthMode::READ_WRITE_LESS_EQUAL);
 
-
     m_renderer.BeginCamera(camera);
     RenderContext ctx{m_renderer, camera, lightConstants, frameConstants};
 
@@ -204,6 +211,9 @@ void RenderSubsystem::ProcessPostEffects(RenderTarget* sceneRT, RenderTarget* ou
         if (processedCount == enabledEffectCount)
             currentOutput = outputRT;
 
+        // 设置渲染目标
+        m_renderer.SetRenderTarget(currentOutput);
+        
         // Process the effects
         effect->SetState();
         effect->Process(currentInput, currentOutput);

@@ -329,8 +329,24 @@ void App::Render() const
 {
     g_theRenderer->ClearScreen(Rgba8(m_backgroundColor));
     g_theGame->Render();
+    
+    // 渲染世界（包含后处理）
+    g_theRenderSubsystem->RenderWorld(*g_theGame->m_spectatorCamera, 
+                                      g_theGame->m_lightingConstants, 
+                                      g_theGame->m_frameConstants);
+    
+    // 确保渲染目标是 backbuffer
+    g_theRenderer->SetRenderTarget(nullptr);
+    
+    // 为 UI 设置合适的渲染状态
+    g_theRenderer->SetDepthMode(DepthMode::DISABLED);  // UI 通常不需要深度测试
+    g_theRenderer->SetBlendMode(BlendMode::ALPHA);     // UI 需要 alpha 混合
+    g_theRenderer->SetRasterizerMode(RasterizerMode::SOLID_CULL_NONE);
+    
+    // 渲染 UI
     g_theWidgetSubsystem->Render();
-    g_theRenderSubsystem->RenderWorld(*g_theGame->m_spectatorCamera, g_theGame->m_lightingConstants, g_theGame->m_frameConstants); // TODO Consider Create Camera Component
+    
+    // DevConsole 可能需要自己的状态
     g_theDevConsole->Render(m_consoleSpace);
 }
 
@@ -344,7 +360,7 @@ void App::EndFrame()
     g_theAudio->EndFrame();
     g_theEventSystem->EndFrame();
     g_theDevConsole->EndFrame();
-
+    
     if (m_isPendingRestart)
     {
         delete g_theGame;
@@ -352,7 +368,7 @@ void App::EndFrame()
         g_theGame = new Game();
         // Restore state
         m_isPendingRestart = false;
-        m_isPaused         = false;
+        m_isPaused = false;
     }
 }
 
