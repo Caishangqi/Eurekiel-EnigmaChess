@@ -131,6 +131,11 @@ void RenderSubsystem::RenderSceneToTarget(const Camera& camera, LightingConstant
         m_renderer.ClearRenderTarget(target, Rgba8(20, 20, 30, 255));
     }
 
+    m_renderer.SetRasterizerMode(RasterizerMode::SOLID_CULL_BACK);
+    m_renderer.SetBlendMode(BlendMode::OPAQUE);
+    m_renderer.SetDepthMode(DepthMode::READ_WRITE_LESS_EQUAL);
+
+
     m_renderer.BeginCamera(camera);
     RenderContext ctx{m_renderer, camera, lightConstants, frameConstants};
 
