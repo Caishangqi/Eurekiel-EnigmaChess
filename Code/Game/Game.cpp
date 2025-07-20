@@ -152,6 +152,7 @@ void Game::Render() const
         //RenderGrids();
         /// Props
         //RenderProps();
+        g_theRenderer->SetRenderTarget(nullptr);
         DebugRenderWorld(*g_theGame->m_player->m_camera);
         DebugRenderScreen(*g_theGame->m_screenCamera);
     }
