@@ -189,24 +189,24 @@ void Game::InitializeNetworking()
 {
     NetworkConfig config;
 
-    // 基本配置
+    // Basic configuration
     config.serverPort = 3100;
     config.serverIp   = "127.0.0.1";
     config.maxPlayers = 4;
 
-    // 根据游戏需求选择发送模式
+    // Choose the sending mode according to the needs of the game
     bool isCompetitiveMode      = g_gameConfigBlackboard.GetValue("competitiveMode", false);
     bool dedicatedNetworkThread = g_gameConfigBlackboard.GetValue("dedicatedNetworkThread", false);
 
     if (dedicatedNetworkThread)
     {
-        // 如果有专用网络线程，可以使用阻塞模式
+        // If you have a dedicated network thread, you can use blocking mode
         config.sendMode = SendMode::BLOCKING;
         std::cout << "Using BLOCKING send mode (dedicated network thread)" << std::endl;
     }
     else if (isCompetitiveMode)
     {
-        // 竞技模式：严格的性能限制
+        // Competitive mode: Strict performance limitations
         config.sendMode                                 = SendMode::NON_BLOCKING;
         config.performanceLimits.maxNetworkTimePerFrame = 0.001; // 1ms
         config.performanceLimits.maxSendBytesPerFrame   = 2048; // 2KB
@@ -214,18 +214,18 @@ void Game::InitializeNetworking()
     }
     else
     {
-        // 休闲模式：宽松的性能限制
+        // Casual mode: Relaxed performance limits
         config.sendMode                                 = SendMode::NON_BLOCKING;
         config.performanceLimits.maxNetworkTimePerFrame = 0.003; // 3ms
         config.performanceLimits.maxSendBytesPerFrame   = 8192; // 8KB
         std::cout << "Using NON_BLOCKING send mode (casual)" << std::endl;
     }
 
-    // 消息边界模式
+    // Message boundary pattern
     config.boundaryMode     = MessageBoundaryMode::NULL_TERMINATED;
     config.messageDelimiter = '\0';
 
-    // 安全设置
+    // Security settings
     config.safetyLimits.enableSafetyChecks = true;
     config.safetyLimits.maxMessageSize     = 32 * 1024; // 32KB
 
