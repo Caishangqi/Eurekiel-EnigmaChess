@@ -10,10 +10,10 @@
 
 EffectBloom::EffectBloom(const std::string& name, int priority) : PostProcessEffect("Bloom", 0)
 {
-    m_bloomConstants.threshold = 0.5f;
+    m_bloomConstants.threshold = 0.3f;
     m_bloomConstants.intensity = 1.2f;
-    m_bloomConstants.blurSigma = 2.0f;
-    m_bloomConstants.padding = 0.0f;
+    m_bloomConstants.blurSigma = 1.0f;
+    m_bloomConstants.padding   = 0.0f;
 }
 
 EffectBloom::~EffectBloom()
@@ -65,17 +65,43 @@ void EffectBloom::Process(RenderTarget* input, RenderTarget* output)
         UpsampleCombine(*m_renderer, i);
     }
 
-    // Final composit
+    // Final composite
     FinalComposite(*m_renderer, input, m_bloomMipChain[0].blurTemp, output);
+
+    // Simplified version: Directly copy input to output to verify basic functionality
+#ifdef EFFECT_BLOOM_DEBUG
+    if (!input || !output)
+    {
+        DebuggerPrintf("Bloom: ERROR - null render targets!\n");
+        return;
+    }
+
+    // Test 1: Copy input directly to output (should show the original scene)
+    m_renderer->BindTexture(nullptr, 0);
+    m_renderer->SetRenderTarget(output);
+    m_renderer->SetViewport(output->GetDimensions());
+    m_renderer->ClearRenderTarget(output, Rgba8::BLACK);
+
+    // Use a simple duplicate shader or composite shader
+    m_renderer->BindShader(m_compositeShader);
+    m_renderer->BindTexture(input->texture, 0);
+    m_renderer->BindTexture(nullptr, 1); // 不使用bloom纹理
+
+    // Set intensity to 0 for testing
+    BloomConstants testConstants = m_bloomConstants;
+    testConstants.intensity      = 0.0f; // This should only show the original scene
+    m_renderer->CopyCPUToGPU(&testConstants, sizeof(BloomConstants), m_bloomConstantsCB);
+    m_renderer->BindConstantBuffer(0, m_bloomConstantsCB);
+
+    DrawFullscreenQuad(*m_renderer);
+
+    DebuggerPrintf("Bloom: Simple test - copying input to output\n");
+#endif
 }
 
 void EffectBloom::SetState()
 {
-    // 设置后处理的标准渲染状态
-    m_renderer->SetDepthMode(DepthMode::DISABLED);           // 禁用深度测试
-    m_renderer->SetRasterizerMode(RasterizerMode::SOLID_CULL_NONE); // 不裁剪背面
-    m_renderer->SetSamplerMode(SamplerMode::BILINEAR_WRAP, 0);       // 线性采样
-    m_renderer->SetBlendMode(BlendMode::OPAQUE);             // 不透明混合
+    PostProcessEffect::SetState();
 }
 
 void EffectBloom::SetThreshold(float threshold)
@@ -151,7 +177,7 @@ void EffectBloom::CreateBuffers(IRenderer& renderer)
     vertices.push_back(Vertex_PCU(Vec3(1.f, -1.f, 0.f), Rgba8::WHITE, Vec2(1.f, 1.f)));
     vertices.push_back(Vertex_PCU(Vec3(1.f, 1.f, 0.f), Rgba8::WHITE, Vec2(1.f, 0.f)));
 
-    m_fullscreenQuadVB = renderer.CreateVertexBuffer(vertices.size() * sizeof(Vertex_PCU), 0);
+    m_fullscreenQuadVB = renderer.CreateVertexBuffer(vertices.size() * sizeof(Vertex_PCU), sizeof(Vertex_PCU));
     renderer.CopyCPUToGPU(vertices.data(), vertices.size() * sizeof(Vertex_PCU), m_fullscreenQuadVB);
 
     // Create a constant buffer
@@ -286,7 +312,7 @@ void EffectBloom::FinalComposite(IRenderer& renderer, RenderTarget* scene, Rende
     // 解绑可能冲突的纹理
     renderer.BindTexture(nullptr, 0);
     renderer.BindTexture(nullptr, 1);
-    
+
     renderer.SetRenderTarget(output);
     renderer.SetViewport(output->GetDimensions());
     renderer.SetBlendMode(BlendMode::OPAQUE);
