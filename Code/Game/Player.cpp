@@ -50,8 +50,7 @@ void Player::Update(float deltaSeconds)
 
     m_orientation.m_rollDegrees += leftTrigger * 0.125f * deltaSeconds * speed;
     m_orientation.m_rollDegrees -= rightTrigger * 0.125f * deltaSeconds * speed;
-
-
+#ifdef DEBUG_ROTATION
     if (g_theInput->IsKeyDown('Q'))
     {
         m_orientation.m_rollDegrees += 0.125f;
@@ -61,6 +60,7 @@ void Player::Update(float deltaSeconds)
     {
         m_orientation.m_rollDegrees -= 0.125f;
     }
+#endif
 
 
     //m_orientation.m_yawDegrees   = GetClamped(m_orientation.m_yawDegrees, -85.f, 85.f);
