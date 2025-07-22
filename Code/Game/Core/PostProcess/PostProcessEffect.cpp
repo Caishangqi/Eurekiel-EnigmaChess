@@ -1,5 +1,6 @@
 ﻿#include "PostProcessEffect.hpp"
 
+#include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Renderer/IRenderer.hpp"
 
 PostProcessEffect::PostProcessEffect(const std::string& name, int priority) : m_name(name), m_priority(priority), m_enabled(true)
@@ -16,6 +17,8 @@ PostProcessEffect::PostProcessEffect(const std::string& name, int priority) : m_
  */
 void PostProcessEffect::Process(RenderTarget* input, RenderTarget* output)
 {
+    UNUSED(input)
+    UNUSED(output)
 }
 
 /**
