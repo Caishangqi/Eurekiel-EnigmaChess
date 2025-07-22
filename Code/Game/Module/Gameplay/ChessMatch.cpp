@@ -74,7 +74,7 @@ ChessMatch::ChessMatch(Game* game) : m_game(game)
     /// Post Process
     auto bloomEffect = std::make_unique<EffectBloom>("Bloom", 0);
     m_bloomEffect    = bloomEffect.get();
-    g_theRenderSubsystem->AddPostProcessEffect(std::move(bloomEffect));
+    //g_theRenderSubsystem->AddPostProcessEffect(std::move(bloomEffect));
 }
 
 ChessMatch::~ChessMatch()
