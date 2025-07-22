@@ -10,10 +10,12 @@
 
 EffectBloom::EffectBloom(const std::string& name, int priority) : PostProcessEffect("Bloom", 0)
 {
-    m_bloomConstants.threshold = 0.3f;
-    m_bloomConstants.intensity = 1.2f;
-    m_bloomConstants.blurSigma = 1.0f;
-    m_bloomConstants.padding   = 0.0f;
+    UNUSED(name)
+    UNUSED(priority)
+    m_bloomConstants.threshold = 0.7f;
+    m_bloomConstants.intensity = 10.5f;
+    m_bloomConstants.blurSigma = -8.f;
+    m_bloomConstants.padding   = 1.0f;
 }
 
 EffectBloom::~EffectBloom()
