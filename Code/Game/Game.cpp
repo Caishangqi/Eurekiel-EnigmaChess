@@ -263,8 +263,7 @@ void Game::Update()
     DebugAddMessage(Stringf("CameraMode (F4): %s | GameState: %s", to_string(cameraMode), to_string(gameState)), 0, Rgba8::ORANGE, Rgba8::ORANGE);
     /// Display Only
 #ifdef COSMIC
-    m_counter++;
-    m_currentIconCircleThickness = FluctuateValue(m_iconCircleRadius, 50.f, 0.02f, static_cast<float>(m_counter));
+    m_currentIconCircleThickness = FluctuateValue(m_iconCircleRadius, 50.f, 0.02f, static_cast<float>(m_clock->GetFrameCount()));
 #endif
     float deltaTime = m_clock->GetDeltaSeconds();
     UpdateCameras(deltaTime);

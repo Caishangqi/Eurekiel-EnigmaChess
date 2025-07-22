@@ -105,6 +105,5 @@ private:
 
     float m_iconCircleRadius           = 200;
     float m_currentIconCircleThickness = 0.f;
-    int   m_counter                    = 0;
 #endif
 };
